@@ -176,42 +176,6 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks to help you and your community</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Link href="/buy-meds">
-                <Button variant="outline" className="w-full h-20 flex flex-col bg-transparent">
-                  <ShoppingCart className="h-6 w-6 mb-2" />
-                  Buy Medicines
-                </Button>
-              </Link>
-              <Link href="/donate-meds">
-                <Button variant="outline" className="w-full h-20 flex flex-col bg-transparent">
-                  <Gift className="h-6 w-6 mb-2" />
-                  Donate Medicines
-                </Button>
-              </Link>
-              <Link href="/micro-grants">
-                <Button variant="outline" className="w-full h-20 flex flex-col bg-transparent">
-                  <DollarSign className="h-6 w-6 mb-2" />
-                  Micro Grants
-                </Button>
-              </Link>
-              <Link href="/profile">
-                <Button variant="outline" className="w-full h-20 flex flex-col bg-transparent">
-                  <User className="h-6 w-6 mb-2" />
-                  My Profile
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </DashboardLayout>
   )

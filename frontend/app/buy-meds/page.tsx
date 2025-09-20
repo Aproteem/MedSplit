@@ -117,36 +117,47 @@ export default function BuyMedsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Searches</CardTitle>
-              <CardDescription>Quick access to your previously searched medications</CardDescription>
+              <CardDescription>
+                Quick access to your previously searched medications
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {recentSearches.map((search, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                  <div>
-                    <p className="font-medium">{search.name}</p>
-                    <p className="text-sm text-gray-500">{search.lastSearched}</p>
+            <CardContent>
+              <div className="flex space-x-4 overflow-x-auto pb-2">
+                {recentSearches.map((search, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 w-40 h-40 p-4 border rounded-2xl flex flex-col justify-between items-center hover:bg-gray-50"
+                  >
+                    <div className="text-center">
+                      <p className="font-medium truncate">{search.name}</p>
+                      <p className="text-sm text-gray-500">{search.lastSearched}</p>
+                    </div>
+                    <div className="flex flex-col space-y-2 items-center">
+                      <Badge
+                        variant={
+                          search.status === "approved"
+                            ? "default"
+                            : search.status === "pending"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {search.status}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSearchQuery(search.name)
+                          setSearchActive(true)
+                        }}
+                      >
+                        Search Again
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Badge
-                      variant={
-                        search.status === "approved" ? "default" : search.status === "pending" ? "secondary" : "outline"
-                      }
-                    >
-                      {search.status}
-                    </Badge>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setSearchQuery(search.name)
-                        setSearchActive(true)
-                      }}
-                    >
-                      Search Again
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </CardContent>
           </Card>
         )}

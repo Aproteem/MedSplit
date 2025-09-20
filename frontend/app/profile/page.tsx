@@ -105,6 +105,16 @@ export default function ProfilePage() {
                     </div>
                   ))}
                 </div>
+              <Button
+                variant="destructive"
+                className="mt-6 w-full"
+                onClick={() => {
+                  // Replace with your sign out logic, e.g., call signOut() from next-auth or your auth provider
+                  window.location.href = "/login";
+                }}
+              >
+                Sign Out
+              </Button>
               </CardContent>
             </Card>
           </div>
