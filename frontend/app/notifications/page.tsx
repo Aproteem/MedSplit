@@ -60,6 +60,25 @@ export default function NotificationsPage() {
     }));
   }, [items]);
 
+  const markAllRead = async () => {
+    setLoading(true);
+    try {
+      await fetch("/api/notifications/clear?action=read", { method: "POST" });
+      const res = await fetch("/api/notifications");
+      setItems(await res.json());
+    } catch (_) {}
+    setLoading(false);
+  };
+
+  const clearAll = async () => {
+    setLoading(true);
+    try {
+      await fetch("/api/notifications/clear?action=delete", { method: "POST" });
+      setItems([]);
+    } catch (_) {}
+    setLoading(false);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -71,6 +90,24 @@ export default function NotificationsPage() {
         </div>
 
         <div className="space-y-4">
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={markAllRead}
+              disabled={loading}
+            >
+              Mark all read
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={clearAll}
+              disabled={loading}
+            >
+              Clear all
+            </Button>
+          </div>
           {mapped.map((notification) => {
             const IconComponent = notification.icon;
             return (
@@ -142,6 +179,6 @@ export default function NotificationsPage() {
   );
 }
 
-function cn(...classes: string[]) {
+function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }

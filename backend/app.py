@@ -21,6 +21,7 @@ COLLECTIONS = [
     'profiles',
     'counters',
     'notifications',
+    'transactions',
 ]
 
 DEFAULT_DB = {
@@ -32,6 +33,7 @@ DEFAULT_DB = {
     'profiles': [],
     'counters': [],
     'notifications': [],
+    'transactions': [],
     # Keep demo list used by existing /api/data endpoints
     'demoData': [],
     'meta': {
@@ -553,6 +555,181 @@ def update_notification(item_id):
 @app.route('/api/notifications/<int:item_id>', methods=['DELETE'])
 def delete_notification(item_id):
     return _delete_item('notifications', item_id)
+
+@app.route('/api/notifications/clear', methods=['POST'])
+def clear_notifications():
+    """Clear all notifications or mark as read. Query param action=delete|read (default read). Optional user_id filter."""
+    action = request.args.get('action', 'read')
+    user_id = request.args.get('user_id')
+    db = load_db()
+    items = db.get('notifications', [])
+    if user_id is not None:
+        # filter by user_id (string compare safe)
+        target = [n for n in items if str(n.get('user_id')) == str(user_id)]
+    else:
+        target = items
+
+    if action == 'delete':
+        if user_id is not None:
+            db['notifications'] = [n for n in items if str(n.get('user_id')) != str(user_id)]
+        else:
+            db['notifications'] = []
+        save_db(db)
+        return jsonify({'message': 'Notifications cleared'})
+    else:
+        # mark as read
+        for n in target:
+            n['read'] = True
+        save_db(db)
+        return jsonify({'message': 'Notifications marked as read'})
+
+# -----------------------------
+# Transactions & Fund Summary
+# -----------------------------
+
+@app.route('/api/transactions', methods=['GET'])
+def list_transactions():
+    return _list_items('transactions')
+
+@app.route('/api/transactions', methods=['POST'])
+def create_transaction():
+    payload = request.get_json() or {}
+    tx_type = payload.get('type')
+    amount = payload.get('amount')
+    if tx_type not in ['contribution', 'disbursement']:
+        return jsonify({'error': 'type must be contribution or disbursement'}), 400
+    try:
+        amount = float(amount)
+    except Exception:
+        return jsonify({'error': 'amount must be a number'}), 400
+    if amount <= 0:
+        return jsonify({'error': 'amount must be > 0'}), 400
+    defaults = {
+        'user_id': payload.get('user_id'),
+        'type': tx_type,
+        'amount': amount,
+        'note': payload.get('note', ''),
+    }
+    return _create_item('transactions', payload, defaults=defaults)
+
+@app.route('/api/fund/summary', methods=['GET'])
+def fund_summary():
+    db = load_db()
+    txs = db.get('transactions', [])
+    total_contributions = sum(t.get('amount', 0) for t in txs if t.get('type') == 'contribution')
+    total_disbursements = sum(t.get('amount', 0) for t in txs if t.get('type') == 'disbursement')
+    balance = total_contributions - total_disbursements
+    recent = sorted(txs, key=lambda t: t.get('created_at', ''), reverse=True)[:10]
+    return jsonify({
+        'balance': balance,
+        'total_contributions': total_contributions,
+        'total_disbursements': total_disbursements,
+        'recent': recent,
+    })
+
+# -----------------------------
+# Actions: Donation Claim & Wishlist Approve
+# -----------------------------
+
+@app.route('/api/donations/<int:item_id>/claim', methods=['POST'])
+def claim_donation(item_id):
+    payload = request.get_json() or {}
+    user_id = payload.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'user_id is required'}), 400
+    db = load_db()
+    donation = _find_by_id(db.get('donations', []), item_id)
+    if not donation:
+        return jsonify({'error': 'Donation not found'}), 404
+    if donation.get('claimed_by'):
+        return jsonify({'error': 'Donation already claimed'}), 400
+    donation['claimed_by'] = user_id
+    donation['claimed_at'] = datetime.now().isoformat()
+    donation['claim_status'] = 'pending'
+    save_db(db)
+    # Notify donor (if any) and claimer
+    _create_item('notifications', {
+        'user_id': user_id,
+        'type': 'donation',
+        'title': 'Donation Claimed',
+        'message': f"You claimed donation #{item_id}.",
+    })
+    return jsonify({'message': 'Donation claimed'})
+
+@app.route('/api/wishlists/<int:item_id>/approve', methods=['POST'])
+def approve_wishlist(item_id):
+    db = load_db()
+    item = _find_by_id(db.get('wishlists', []), item_id)
+    if not item:
+        return jsonify({'error': 'Wishlist not found'}), 404
+    if item.get('approved') is True:
+        return jsonify({'message': 'Already approved'})
+    item['approved'] = True
+    save_db(db)
+    # Notify user
+    _create_item('notifications', {
+        'user_id': item.get('user_id'),
+        'type': 'approval',
+        'title': 'Request Approved',
+        'message': 'Your medicine request has been approved.',
+    })
+    return jsonify(item)
+
+@app.route('/api/wishlists/<int:item_id>/reject', methods=['POST'])
+def reject_wishlist(item_id):
+    db = load_db()
+    item = _find_by_id(db.get('wishlists', []), item_id)
+    if not item:
+        return jsonify({'error': 'Wishlist not found'}), 404
+    item['approved'] = False
+    item['rejected_at'] = datetime.now().isoformat()
+    save_db(db)
+    _create_item('notifications', {
+        'user_id': item.get('user_id'),
+        'type': 'approval',
+        'title': 'Request Rejected',
+        'message': 'Your medicine request was not approved at this time.',
+    })
+    return jsonify(item)
+
+@app.route('/api/donations/<int:item_id>/approve-claim', methods=['POST'])
+def approve_donation_claim(item_id):
+    db = load_db()
+    donation = _find_by_id(db.get('donations', []), item_id)
+    if not donation:
+        return jsonify({'error': 'Donation not found'}), 404
+    if not donation.get('claimed_by'):
+        return jsonify({'error': 'No pending claim'}), 400
+    donation['claim_status'] = 'approved'
+    donation['claim_decided_at'] = datetime.now().isoformat()
+    save_db(db)
+    _create_item('notifications', {
+        'user_id': donation.get('claimed_by'),
+        'type': 'donation',
+        'title': 'Donation Approved',
+        'message': f"Your claim for donation #{item_id} was approved.",
+    })
+    return jsonify(donation)
+
+@app.route('/api/donations/<int:item_id>/reject-claim', methods=['POST'])
+def reject_donation_claim(item_id):
+    db = load_db()
+    donation = _find_by_id(db.get('donations', []), item_id)
+    if not donation:
+        return jsonify({'error': 'Donation not found'}), 404
+    if not donation.get('claimed_by'):
+        return jsonify({'error': 'No pending claim'}), 400
+    user_id = donation.get('claimed_by')
+    donation['claim_status'] = 'rejected'
+    donation['claim_decided_at'] = datetime.now().isoformat()
+    save_db(db)
+    _create_item('notifications', {
+        'user_id': user_id,
+        'type': 'donation',
+        'title': 'Donation Rejected',
+        'message': f"Your claim for donation #{item_id} was rejected.",
+    })
+    return jsonify(donation)
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', '5050'))

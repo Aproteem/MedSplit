@@ -22,6 +22,7 @@ import {
   Heart,
 } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { useCurrentUser } from "@/hooks/use-current-user";
 import { DonationForm } from "@/components/donation-form";
 
 type Donation = {
@@ -48,6 +49,7 @@ type UiDonation = {
 };
 
 export default function DonateMedsPage() {
+  const { user } = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [showDonationForm, setShowDonationForm] = useState(false);
   const [requestedMeds, setRequestedMeds] = useState<number[]>([]);
@@ -98,13 +100,17 @@ export default function DonateMedsPage() {
 
   const handleSearch = () => {};
 
-  const requestDonation = (donationId: number) => {
+  const requestDonation = async (donationId: number) => {
     setRequestedMeds((prev) => [...prev, donationId]);
-    const donation = availableDonations.find((d) => d.id === donationId);
-    if (donation) {
-      alert(
-        `Request verification for ${donation.name} to doctor has been sent`
-      );
+    try {
+      await fetch(`/api/donations/${donationId}/claim`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: 1 }),
+      });
+      alert("Request sent and donation claimed (demo). Doctor will verify.");
+    } catch (_) {
+      // ignore
     }
   };
 
@@ -129,7 +135,10 @@ export default function DonateMedsPage() {
               Find donated medicines or share your unused medications
             </p>
           </div>
-          <Button onClick={() => setShowDonationForm(true)}>
+          <Button
+            onClick={() => setShowDonationForm(true)}
+            disabled={user?.role === "doctor"}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Donate Medicine
           </Button>

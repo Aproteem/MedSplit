@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Search, Heart, Users, MapPin, Clock, CheckCircle } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 const recentSearches = [
   { name: "Metformin", lastSearched: "2 days ago", status: "approved" },
@@ -44,6 +45,7 @@ type UiMedicine = {
 };
 
 export default function BuyMedsPage() {
+  const { user } = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchActive, setSearchActive] = useState(false);
   const [wishlistItems, setWishlistItems] = useState<number[]>([]);
@@ -309,6 +311,7 @@ export default function BuyMedsPage() {
                             onClick={() => toggleWishlist(med.id)}
                             variant={isInWishlist ? "default" : "outline"}
                             className="w-full"
+                            disabled={user?.role === "doctor"}
                           >
                             {isInWishlist ? (
                               <>

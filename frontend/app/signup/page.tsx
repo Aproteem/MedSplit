@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Heart, User, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export default function SignupPage() {
   const [userType, setUserType] = useState<"patient" | "provider">("patient");
@@ -23,6 +24,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { setUser } = useCurrentUser();
 
   const handleSignup = async () => {
     setIsLoading(true);
@@ -36,6 +38,7 @@ export default function SignupPage() {
       if (!res.ok) throw new Error("failed");
       // Optional: create a basic profile
       const user = await res.json();
+      setUser({ id: user.id, email: user.email, role });
       const [first_name, ...rest] = name.split(" ");
       const last_name = rest.join(" ");
       if (first_name) {

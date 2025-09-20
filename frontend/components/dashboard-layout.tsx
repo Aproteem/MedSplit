@@ -1,32 +1,47 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, Menu, ShoppingCart, Gift, DollarSign, User, FileText, Bell, LogOut, Home } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Heart,
+  Menu,
+  ShoppingCart,
+  Gift,
+  DollarSign,
+  User,
+  FileText,
+  Bell,
+  LogOut,
+  Home,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Buy Meds", href: "/buy-meds", icon: ShoppingCart },
   { name: "Donate Meds", href: "/donate-meds", icon: Gift },
   { name: "Micro Grants", href: "/micro-grants", icon: DollarSign },
+  { name: "Fund", href: "/fund", icon: DollarSign },
+  { name: "Doctor Tools", href: "/doctor-tools", icon: Bell },
   { name: "Profile", href: "/profile", icon: User },
   { name: "Documents", href: "/documents", icon: FileText },
-]
+];
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const pathname = usePathname()
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const { user } = useCurrentUser();
 
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className={cn("flex flex-col h-full", mobile ? "w-full" : "w-64")}>
@@ -38,23 +53,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                isActive ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-              )}
-              onClick={() => mobile && setSidebarOpen(false)}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.name}</span>
-            </Link>
-          )
-        })}
+        {navigation
+          .filter((item) => {
+            if (item.name === "Doctor Tools") return user?.role === "doctor";
+            if (item.name === "Fund") return true;
+            return true;
+          })
+          .map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                )}
+                onClick={() => mobile && setSidebarOpen(false)}
+              >
+                <item.icon className="h-5 w-5" />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
       </nav>
 
       {/* User Profile */}
@@ -65,7 +88,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">John Doe</p>
+            <p className="text-sm font-medium text-gray-900 truncate">
+              John Doe
+            </p>
             <p className="text-xs text-gray-500 truncate">Patient</p>
           </div>
         </div>
@@ -77,7 +102,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </Link>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -93,34 +118,48 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                      isActive ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                )
-              })}
+              {navigation
+                .filter((item) => {
+                  if (item.name === "Doctor Tools")
+                    return user?.role === "doctor";
+                  if (item.name === "Fund") return true;
+                  return true;
+                })
+                .map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                        isActive
+                          ? "bg-primary text-primary-foreground"
+                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
             </nav>
 
             {/* Right side - User info and notifications */}
             <div className="flex items-center space-x-4">
               {/* User Profile */}
-              <Link href="/profile" className="hidden md:flex items-center space-x-3 hover:bg-gray-100 rounded-lg p-2 transition-colors">
+              <Link
+                href="/profile"
+                className="hidden md:flex items-center space-x-3 hover:bg-gray-100 rounded-lg p-2 transition-colors"
+              >
                 <Avatar>
                   <AvatarImage src="/user-avatar.jpg" />
                   <AvatarFallback>JD</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">John Doe</p>
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    John Doe
+                  </p>
                   <p className="text-xs text-gray-500 truncate">Patient</p>
                 </div>
               </Link>
@@ -154,5 +193,5 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Page Content */}
       <main className="p-4 sm:p-6 lg:p-8">{children}</main>
     </div>
-  )
+  );
 }
