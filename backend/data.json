@@ -1,7 +1,259 @@
-[
-  {
-    "id": 1,
-    "text": "Aproteem",
-    "timestamp": "2025-09-20T02:19:44.984254"
-  }
-]
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "patient@example.com",
+      "password": "pass123",
+      "role": "patient",
+      "phone": "555-0101",
+      "created_at": "2025-09-20T10:00:00.000Z",
+      "num_meds_requested": 1,
+      "pending_approval_meds": [
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "email": "doctor@example.com",
+      "password": "pass123",
+      "role": "doctor",
+      "phone": "555-0202",
+      "created_at": "2025-09-20T10:05:00.000Z",
+      "num_meds_requested": 0,
+      "pending_approval_meds": []
+    },
+    {
+      "email": "reevu1214@gmail.com",
+      "password": "Reevu@1214",
+      "role": "patient",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 3,
+      "created_at": "2025-09-20T16:09:55.814476"
+    }
+  ],
+  "medicines": [
+    {
+      "id": 1,
+      "name": "Amoxicillin 500mg",
+      "generic_name": "Amoxicillin",
+      "description": "Antibiotic",
+      "created_at": "2025-09-19T09:00:00.000Z",
+      "expire_at": "2026-06-01",
+      "current_demand": 6,
+      "required_demand": 20
+    },
+    {
+      "id": 2,
+      "name": "Ibuprofen 200mg",
+      "generic_name": "Ibuprofen",
+      "description": "NSAID pain reliever",
+      "created_at": "2025-09-19T09:10:00.000Z",
+      "expire_at": "2025-12-31",
+      "current_demand": 14,
+      "required_demand": 20
+    },
+    {
+      "id": 3,
+      "name": "Metformin 500mg",
+      "generic_name": "Metformin",
+      "description": "Type 2 diabetes medication",
+      "created_at": "2025-09-19T09:20:00.000Z",
+      "expire_at": "2027-03-15",
+      "current_demand": 8,
+      "required_demand": 25
+    }
+  ],
+  "wishlists": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "medicine_id": 2,
+      "quantity": 2,
+      "approved": false,
+      "created_at": "2025-09-20T10:10:00.000Z"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 2,
+      "quantity": 1,
+      "approved": false,
+      "id": 2,
+      "created_at": "2025-09-20T15:59:43.460508"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 1,
+      "quantity": 1,
+      "approved": false,
+      "id": 3,
+      "created_at": "2025-09-20T16:12:24.485843"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 2,
+      "quantity": 1,
+      "approved": false,
+      "id": 4,
+      "created_at": "2025-09-20T16:12:37.056492"
+    }
+  ],
+  "donations": [
+    {
+      "id": 1,
+      "donor_id": 2,
+      "medicine_id": 1,
+      "quantity": 20,
+      "created_at": "2025-09-20T10:15:00.000Z",
+      "medicine_expires_at": "2026-06-01"
+    },
+    {
+      "id": 2,
+      "donor_id": 2,
+      "medicine_id": 2,
+      "quantity": 40,
+      "created_at": "2025-09-20T11:00:00.000Z",
+      "medicine_expires_at": "2025-12-31"
+    },
+    {
+      "donor_id": 2,
+      "medicine_id": 1,
+      "quantity": 1,
+      "medicine_expires_at": "2025-10-15",
+      "id": 3,
+      "created_at": "2025-09-20T16:13:29.756163"
+    }
+  ],
+  "grants": [
+    {
+      "id": 1,
+      "requestor_id": 1,
+      "title": "Insulin Support",
+      "description": "Help covering co-pay for monthly insulin.",
+      "created_at": "2025-09-20T10:20:00.000Z"
+    },
+    {
+      "id": 2,
+      "requestor_id": 1,
+      "title": "Blood Pressure Medication",
+      "description": "Need assistance for Lisinopril for 3 months.",
+      "created_at": "2025-09-20T11:10:00.000Z"
+    }
+  ],
+  "profiles": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "first_name": "Alex",
+      "last_name": "Patient",
+      "phone": "555-0101",
+      "address": "123 Health St, Houston, TX",
+      "emergency_contact": "555-9999",
+      "date_of_birth": "1990-04-12",
+      "bio": "Community member seeking affordable meds.",
+      "medical_conditions": [
+        "Type 2 Diabetes"
+      ],
+      "allergies": [
+        "Penicillin"
+      ],
+      "created_at": "2025-09-20T10:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "first_name": "Dana",
+      "last_name": "Doctor",
+      "phone": "555-0202",
+      "address": "456 Care Ave, Houston, TX",
+      "emergency_contact": "555-7777",
+      "date_of_birth": "1984-02-03",
+      "bio": "Physician volunteering donations.",
+      "medical_conditions": [],
+      "allergies": [],
+      "created_at": "2025-09-20T10:05:00.000Z"
+    },
+    {
+      "first_name": "Sifat",
+      "last_name": "Islam",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 3,
+      "id": 3,
+      "created_at": "2025-09-20T16:09:55.822667"
+    }
+  ],
+  "counters": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "medicine_purchases": 1,
+      "donations": 0,
+      "grant_given": 0,
+      "created_at": "2025-09-20T10:25:00.000Z"
+    },
+    {
+      "id": 2,
+      "user_id": 2,
+      "medicine_purchases": 0,
+      "donations": 1,
+      "grant_given": 2,
+      "created_at": "2025-09-20T10:25:00.000Z"
+    }
+  ],
+  "demoData": [
+    {
+      "id": 1,
+      "text": "Aproteem",
+      "timestamp": "2025-09-20T02:19:44.984254"
+    }
+  ],
+  "meta": {
+    "counters": {
+      "users": 3,
+      "medicines": 3,
+      "wishlists": 4,
+      "donations": 3,
+      "grants": 3,
+      "profiles": 3,
+      "counters": 2,
+      "demoData": 1,
+      "notifications": 3
+    }
+  },
+  "notifications": [
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Ibuprofen 200mg was added to wishlist.",
+      "read": false,
+      "id": 1,
+      "created_at": "2025-09-20T15:59:43.461234"
+    },
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
+      "read": false,
+      "id": 2,
+      "created_at": "2025-09-20T16:12:24.487230"
+    },
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Ibuprofen 200mg was added to wishlist.",
+      "read": false,
+      "id": 3,
+      "created_at": "2025-09-20T16:12:37.058072"
+    }
+  ]
+}

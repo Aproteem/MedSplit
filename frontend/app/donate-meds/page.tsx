@@ -1,76 +1,120 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Gift, MapPin, Clock, Calendar, Plus, Heart } from "lucide-react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { DonationForm } from "@/components/donation-form"
+import { useEffect, useMemo, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Search,
+  Gift,
+  MapPin,
+  Clock,
+  Calendar,
+  Plus,
+  Heart,
+} from "lucide-react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { DonationForm } from "@/components/donation-form";
 
-const availableDonations = [
-  {
-    id: 1,
-    name: "Insulin Glargine 100 units/mL",
-    donorName: "Sarah M.",
-    location: "Within 3 miles",
-    expiryDate: "2025-08-15",
-    quantity: "2 vials",
-    condition: "Unopened, refrigerated",
-    timePosted: "2 hours ago",
-    verified: true,
-  },
-  {
-    id: 2,
-    name: "Metformin 500mg",
-    donorName: "John D.",
-    location: "Within 1 mile",
-    expiryDate: "2025-12-20",
-    quantity: "60 tablets",
-    condition: "Sealed bottle, 3/4 full",
-    timePosted: "1 day ago",
-    verified: true,
-  },
-  {
-    id: 3,
-    name: "Lisinopril 10mg",
-    donorName: "Maria L.",
-    location: "Within 5 miles",
-    expiryDate: "2025-06-30",
-    quantity: "45 tablets",
-    condition: "Original packaging",
-    timePosted: "3 days ago",
-    verified: false,
-  },
-]
+type Donation = {
+  id: number;
+  donor_id?: number;
+  medicine_id: number;
+  quantity: number;
+  medicine_expires_at?: string;
+  created_at?: string;
+};
+
+type Medicine = { id: number; name: string };
+
+type UiDonation = {
+  id: number;
+  name: string;
+  donorName: string;
+  location: string;
+  expiryDate: string;
+  quantity: string;
+  condition: string;
+  timePosted: string;
+  verified: boolean;
+};
 
 export default function DonateMedsPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showDonationForm, setShowDonationForm] = useState(false)
-  const [requestedMeds, setRequestedMeds] = useState<number[]>([])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDonationForm, setShowDonationForm] = useState(false);
+  const [requestedMeds, setRequestedMeds] = useState<number[]>([]);
+  const [donations, setDonations] = useState<UiDonation[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSearch = () => {
-    // In a real app, this would filter the donations
-    console.log("Searching for:", searchQuery)
-  }
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [donRes, medRes] = await Promise.all([
+        fetch("/api/donations"),
+        fetch("/api/medicines"),
+      ]);
+      const dons: Donation[] = await donRes.json();
+      const meds: Medicine[] = await medRes.json();
+      const idToMed = new Map(meds.map((m) => [m.id, m]));
+      const mapped: UiDonation[] = dons.map((d, idx) => ({
+        id: d.id,
+        name: idToMed.get(d.medicine_id)?.name || `Medicine #${d.medicine_id}`,
+        donorName: `User #${d.donor_id ?? 0}`,
+        location: "Within 3 miles",
+        expiryDate:
+          d.medicine_expires_at || new Date().toISOString().slice(0, 10),
+        quantity: String(d.quantity),
+        condition: "Original packaging",
+        timePosted: d.created_at
+          ? new Date(d.created_at).toLocaleString()
+          : "today",
+        verified: idx % 2 === 0,
+      }));
+      setDonations(mapped);
+    } catch (_) {
+      setDonations([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadData();
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (!searchQuery) return donations;
+    const q = searchQuery.toLowerCase();
+    return donations.filter((d) => d.name.toLowerCase().includes(q));
+  }, [donations, searchQuery]);
+
+  const handleSearch = () => {};
 
   const requestDonation = (donationId: number) => {
-    setRequestedMeds((prev) => [...prev, donationId])
-    const donation = availableDonations.find((d) => d.id === donationId)
+    setRequestedMeds((prev) => [...prev, donationId]);
+    const donation = availableDonations.find((d) => d.id === donationId);
     if (donation) {
-      alert(`Request verification for ${donation.name} to doctor has been sent`)
+      alert(
+        `Request verification for ${donation.name} to doctor has been sent`
+      );
     }
-  }
+  };
 
   const isExpiringSoon = (expiryDate: string) => {
-    const expiry = new Date(expiryDate)
-    const now = new Date()
-    const diffTime = expiry.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays <= 90 // Expiring within 3 months
-  }
+    const expiry = new Date(expiryDate);
+    const now = new Date();
+    const diffTime = expiry.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 90; // Expiring within 3 months
+  };
 
   return (
     <DashboardLayout>
@@ -78,8 +122,12 @@ export default function DonateMedsPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Donate Medicines</h1>
-            <p className="text-gray-600">Find donated medicines or share your unused medications</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Donate Medicines
+            </h1>
+            <p className="text-gray-600">
+              Find donated medicines or share your unused medications
+            </p>
           </div>
           <Button onClick={() => setShowDonationForm(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -117,13 +165,17 @@ export default function DonateMedsPage() {
             {/* Available Donations */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Available Donations Near You</h2>
-                <p className="text-gray-600">{availableDonations.length} donations available</p>
+                <h2 className="text-xl font-semibold">
+                  Available Donations Near You
+                </h2>
+                <p className="text-gray-600">
+                  {filtered.length} donations available
+                </p>
               </div>
 
-              {availableDonations.map((donation) => {
-                const isRequested = requestedMeds.includes(donation.id)
-                const expiringSoon = isExpiringSoon(donation.expiryDate)
+              {filtered.map((donation) => {
+                const isRequested = requestedMeds.includes(donation.id);
+                const expiringSoon = isExpiringSoon(donation.expiryDate);
 
                 return (
                   <Card key={donation.id} className="overflow-hidden">
@@ -133,15 +185,26 @@ export default function DonateMedsPage() {
                         <div className="lg:col-span-2 space-y-4">
                           <div>
                             <div className="flex items-center space-x-2 mb-2">
-                              <h3 className="text-xl font-semibold text-gray-900">{donation.name}</h3>
+                              <h3 className="text-xl font-semibold text-gray-900">
+                                {donation.name}
+                              </h3>
                               {donation.verified && (
-                                <Badge variant="default" className="bg-green-100 text-green-800">
+                                <Badge
+                                  variant="default"
+                                  className="bg-green-100 text-green-800"
+                                >
                                   Verified
                                 </Badge>
                               )}
-                              {expiringSoon && <Badge variant="destructive">Expires Soon</Badge>}
+                              {expiringSoon && (
+                                <Badge variant="destructive">
+                                  Expires Soon
+                                </Badge>
+                              )}
                             </div>
-                            <p className="text-gray-600">Donated by {donation.donorName}</p>
+                            <p className="text-gray-600">
+                              Donated by {donation.donorName}
+                            </p>
                           </div>
 
                           {/* Details */}
@@ -156,7 +219,12 @@ export default function DonateMedsPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               <Calendar className="h-4 w-4 text-gray-400" />
-                              <span>Expires: {new Date(donation.expiryDate).toLocaleDateString()}</span>
+                              <span>
+                                Expires:{" "}
+                                {new Date(
+                                  donation.expiryDate
+                                ).toLocaleDateString()}
+                              </span>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Gift className="h-4 w-4 text-gray-400" />
@@ -175,8 +243,12 @@ export default function DonateMedsPage() {
                         <div className="space-y-4">
                           <div className="bg-blue-50 p-4 rounded-lg text-center">
                             <Gift className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-blue-800">Free Donation</p>
-                            <p className="text-xs text-blue-600">Community supported</p>
+                            <p className="text-sm font-medium text-blue-800">
+                              Free Donation
+                            </p>
+                            <p className="text-xs text-blue-600">
+                              Community supported
+                            </p>
                           </div>
 
                           <Button
@@ -196,13 +268,15 @@ export default function DonateMedsPage() {
                           </Button>
 
                           {isRequested && (
-                            <p className="text-xs text-center text-gray-500">Waiting for doctor approval</p>
+                            <p className="text-xs text-center text-gray-500">
+                              Waiting for doctor approval
+                            </p>
                           )}
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           </TabsContent>
@@ -211,13 +285,19 @@ export default function DonateMedsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Your Donations</CardTitle>
-                <CardDescription>Medicines you've donated to the community</CardDescription>
+                <CardDescription>
+                  Medicines you've donated to the community
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <Gift className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No donations yet</h3>
-                  <p className="text-gray-600 mb-4">Help your community by donating unused medications</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No donations yet
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    Help your community by donating unused medications
+                  </p>
                   <Button onClick={() => setShowDonationForm(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Donate Your First Medicine
@@ -229,8 +309,10 @@ export default function DonateMedsPage() {
         </Tabs>
 
         {/* Donation Form Modal */}
-        {showDonationForm && <DonationForm onClose={() => setShowDonationForm(false)} />}
+        {showDonationForm && (
+          <DonationForm onClose={() => setShowDonationForm(false)} />
+        )}
       </div>
     </DashboardLayout>
-  )
+  );
 }

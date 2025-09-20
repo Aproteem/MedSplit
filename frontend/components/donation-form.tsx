@@ -1,18 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Upload, Camera, FileText } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { X, Upload, Camera, FileText } from "lucide-react";
 
 interface DonationFormProps {
-  onClose: () => void
+  onClose: () => void;
 }
 
 export function DonationForm({ onClose }: DonationFormProps) {
@@ -23,24 +35,42 @@ export function DonationForm({ onClose }: DonationFormProps) {
     condition: "",
     doctorName: "",
     additionalNotes: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    // Simulate form submission and verification
-    setTimeout(() => {
-      setIsSubmitting(false)
-      alert("Donation submitted! We're verifying your medication documentation.")
-      onClose()
-    }, 2000)
-  }
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      // Create or reuse medicine by name (simple demo: always create donation referencing medicine 1 if known)
+      const medRes = await fetch(
+        "/api/medicines?query=" + encodeURIComponent(formData.medicineName)
+      );
+      const meds = await medRes.json();
+      const medId = Array.isArray(meds) && meds[0]?.id ? meds[0].id : 1;
+      const res = await fetch("/api/donations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          donor_id: 2,
+          medicine_id: medId,
+          quantity: Number(formData.quantity) || 1,
+          medicine_expires_at: formData.expiryDate,
+        }),
+      });
+      if (!res.ok) throw new Error("failed");
+      alert("Donation submitted! We'll verify documentation shortly.");
+      onClose();
+    } catch (_) {
+      alert("Failed to submit donation. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -48,7 +78,9 @@ export function DonationForm({ onClose }: DonationFormProps) {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Donate Medicine</CardTitle>
-            <CardDescription>Help your community by donating unused medications</CardDescription>
+            <CardDescription>
+              Help your community by donating unused medications
+            </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -68,7 +100,9 @@ export function DonationForm({ onClose }: DonationFormProps) {
                     id="medicine-name"
                     placeholder="e.g., Metformin 500mg"
                     value={formData.medicineName}
-                    onChange={(e) => handleInputChange("medicineName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("medicineName", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -79,7 +113,9 @@ export function DonationForm({ onClose }: DonationFormProps) {
                     id="quantity"
                     placeholder="e.g., 30 tablets, 2 vials"
                     value={formData.quantity}
-                    onChange={(e) => handleInputChange("quantity", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("quantity", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -92,22 +128,34 @@ export function DonationForm({ onClose }: DonationFormProps) {
                     id="expiry-date"
                     type="date"
                     value={formData.expiryDate}
-                    onChange={(e) => handleInputChange("expiryDate", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("expiryDate", e.target.value)
+                    }
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="condition">Condition *</Label>
-                  <Select onValueChange={(value) => handleInputChange("condition", value)}>
+                  <Select
+                    onValueChange={(value) =>
+                      handleInputChange("condition", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select condition" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="unopened">Unopened/Sealed</SelectItem>
-                      <SelectItem value="opened-full">Opened but full</SelectItem>
-                      <SelectItem value="opened-partial">Opened, partially used</SelectItem>
-                      <SelectItem value="refrigerated">Refrigerated storage</SelectItem>
+                      <SelectItem value="opened-full">
+                        Opened but full
+                      </SelectItem>
+                      <SelectItem value="opened-partial">
+                        Opened, partially used
+                      </SelectItem>
+                      <SelectItem value="refrigerated">
+                        Refrigerated storage
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -124,7 +172,9 @@ export function DonationForm({ onClose }: DonationFormProps) {
                   id="doctor-name"
                   placeholder="Dr. Smith, Dr. Johnson, etc."
                   value={formData.doctorName}
-                  onChange={(e) => handleInputChange("doctorName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("doctorName", e.target.value)
+                  }
                   required
                 />
               </div>
@@ -136,7 +186,9 @@ export function DonationForm({ onClose }: DonationFormProps) {
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <div className="space-y-2">
                   <Camera className="h-8 w-8 text-gray-400 mx-auto" />
-                  <p className="text-sm text-gray-600">Upload a clear photo of the medicine packaging</p>
+                  <p className="text-sm text-gray-600">
+                    Upload a clear photo of the medicine packaging
+                  </p>
                   <div className="flex justify-center space-x-2">
                     <Button type="button" variant="outline" size="sm">
                       <Upload className="h-4 w-4 mr-2" />
@@ -158,7 +210,9 @@ export function DonationForm({ onClose }: DonationFormProps) {
                 id="notes"
                 placeholder="Any additional information about the medicine, storage conditions, etc."
                 value={formData.additionalNotes}
-                onChange={(e) => handleInputChange("additionalNotes", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("additionalNotes", e.target.value)
+                }
                 rows={3}
               />
             </div>
@@ -168,10 +222,13 @@ export function DonationForm({ onClose }: DonationFormProps) {
               <div className="flex items-start space-x-3">
                 <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-800">Verification Process</p>
+                  <p className="font-medium text-blue-800">
+                    Verification Process
+                  </p>
                   <p className="text-blue-700 mt-1">
-                    We'll cross-check this donation with your current medication documentation to ensure safety and
-                    authenticity before making it available to the community.
+                    We'll cross-check this donation with your current medication
+                    documentation to ensure safety and authenticity before
+                    making it available to the community.
                   </p>
                 </div>
               </div>
@@ -179,7 +236,12 @@ export function DonationForm({ onClose }: DonationFormProps) {
 
             {/* Submit Button */}
             <div className="flex space-x-3">
-              <Button type="button" variant="outline" onClick={onClose} className="flex-1 bg-transparent">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="flex-1 bg-transparent"
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
@@ -190,5 +252,5 @@ export function DonationForm({ onClose }: DonationFormProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
