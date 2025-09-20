@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { X, Upload, FileText, DollarSign } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { X, Upload, FileText, DollarSign } from "lucide-react";
 
 interface GrantRequestFormProps {
-  onClose: () => void
+  onClose: () => void;
 }
 
 export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
@@ -20,24 +26,35 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
     amount: "",
     description: "",
     reason: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false)
-      alert("Grant request submitted! It will be reviewed and added to the community grants list.")
-      onClose()
-    }, 2000)
-  }
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/grants", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestor_id: 1,
+          title: formData.title,
+          description: formData.description,
+        }),
+      });
+      if (!res.ok) throw new Error("failed");
+      alert("Grant request submitted! It will appear in community grants.");
+      onClose();
+    } catch (_) {
+      alert("Failed to submit grant request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -45,7 +62,9 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Request Micro Grant</CardTitle>
-            <CardDescription>Request financial support from the community (up to $200)</CardDescription>
+            <CardDescription>
+              Request financial support from the community (up to $200)
+            </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -81,11 +100,15 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
                     placeholder="150"
                     className="pl-10"
                     value={formData.amount}
-                    onChange={(e) => handleInputChange("amount", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("amount", e.target.value)
+                    }
                     required
                   />
                 </div>
-                <p className="text-xs text-gray-500">Maximum grant amount is $200</p>
+                <p className="text-xs text-gray-500">
+                  Maximum grant amount is $200
+                </p>
               </div>
             </div>
 
@@ -99,12 +122,15 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
                   id="description"
                   placeholder="Explain your situation and why you need this grant. Be specific about your medical condition and financial circumstances."
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   rows={4}
                   required
                 />
                 <p className="text-xs text-gray-500">
-                  Be honest and detailed. This helps community members understand your situation.
+                  Be honest and detailed. This helps community members
+                  understand your situation.
                 </p>
               </div>
 
@@ -127,9 +153,12 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <div className="space-y-2">
                   <FileText className="h-8 w-8 text-gray-400 mx-auto" />
-                  <p className="text-sm text-gray-600">Upload supporting documents (optional but recommended)</p>
+                  <p className="text-sm text-gray-600">
+                    Upload supporting documents (optional but recommended)
+                  </p>
                   <p className="text-xs text-gray-500">
-                    Medical bills, prescription receipts, insurance statements, etc.
+                    Medical bills, prescription receipts, insurance statements,
+                    etc.
                   </p>
                   <Button type="button" variant="outline" size="sm">
                     <Upload className="h-4 w-4 mr-2" />
@@ -149,7 +178,9 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
                     <li>Grants are for medical expenses only</li>
                     <li>Maximum amount is $200 per request</li>
                     <li>All requests are reviewed for authenticity</li>
-                    <li>Funds go directly to medical providers when possible</li>
+                    <li>
+                      Funds go directly to medical providers when possible
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -157,7 +188,12 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
 
             {/* Submit Button */}
             <div className="flex space-x-3">
-              <Button type="button" variant="outline" onClick={onClose} className="flex-1 bg-transparent">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="flex-1 bg-transparent"
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting} className="flex-1">
@@ -168,5 +204,5 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

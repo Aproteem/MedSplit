@@ -1,87 +1,130 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Search, Heart, Users, MapPin, Clock, CheckCircle } from "lucide-react"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Search, Heart, Users, MapPin, Clock, CheckCircle } from "lucide-react";
+import { DashboardLayout } from "@/components/dashboard-layout";
 
 const recentSearches = [
   { name: "Metformin", lastSearched: "2 days ago", status: "approved" },
   { name: "Lisinopril", lastSearched: "1 week ago", status: "pending" },
   { name: "Atorvastatin", lastSearched: "2 weeks ago", status: "wishlisted" },
-]
+];
 
-const searchResults = [
-  {
-    id: 1,
-    name: "Metformin 500mg",
-    genericName: "Metformin Hydrochloride",
-    currentPrice: 45,
-    bulkPrice: 28,
-    currentDemand: 12,
-    requiredDemand: 20,
-    location: "Within 5 miles",
-    estimatedTime: "3-5 days",
-    inWishlist: false,
-    description: "Used to treat type 2 diabetes",
-  },
-  {
-    id: 2,
-    name: "Lisinopril 10mg",
-    genericName: "Lisinopril",
-    currentPrice: 32,
-    bulkPrice: 18,
-    currentDemand: 18,
-    requiredDemand: 20,
-    location: "Within 2 miles",
-    estimatedTime: "1-2 days",
-    inWishlist: true,
-    description: "ACE inhibitor for high blood pressure",
-  },
-  {
-    id: 3,
-    name: "Atorvastatin 20mg",
-    genericName: "Atorvastatin Calcium",
-    currentPrice: 55,
-    bulkPrice: 35,
-    currentDemand: 8,
-    requiredDemand: 25,
-    location: "Within 10 miles",
-    estimatedTime: "7-10 days",
-    inWishlist: false,
-    description: "Statin medication for cholesterol",
-  },
-]
+type Medicine = {
+  id: number;
+  name: string;
+  generic_name?: string;
+  description?: string;
+  current_demand?: number;
+  required_demand?: number;
+};
+
+type UiMedicine = {
+  id: number;
+  name: string;
+  genericName: string;
+  currentPrice: number;
+  bulkPrice: number;
+  currentDemand: number;
+  requiredDemand: number;
+  location: string;
+  estimatedTime: string;
+  description: string;
+};
 
 export default function BuyMedsPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchActive, setSearchActive] = useState(false)
-  const [wishlistItems, setWishlistItems] = useState<number[]>([2])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchActive, setSearchActive] = useState(false);
+  const [wishlistItems, setWishlistItems] = useState<number[]>([]);
+  const [results, setResults] = useState<UiMedicine[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // initial load
+    void fetchMedicines("");
+  }, []);
+
+  const mapToUi = (m: Medicine, index: number): UiMedicine => {
+    const currentDemand = Number(m.current_demand || 0);
+    const requiredDemand = Number(m.required_demand || 20);
+    // simple derived pricing for demo
+    const currentPrice = 25 + (index % 5) * 5 + 10;
+    const bulkPrice = Math.max(5, currentPrice - 12);
+    return {
+      id: m.id,
+      name: m.name,
+      genericName: m.generic_name || "",
+      description: m.description || "",
+      currentDemand,
+      requiredDemand,
+      currentPrice,
+      bulkPrice,
+      location: "Within 5 miles",
+      estimatedTime: "3-5 days",
+    };
+  };
+
+  const fetchMedicines = async (query: string) => {
+    setLoading(true);
+    try {
+      const url = query
+        ? `/api/medicines?query=${encodeURIComponent(query)}`
+        : "/api/medicines";
+      const res = await fetch(url);
+      const data: Medicine[] = await res.json();
+      setResults(data.map((m, i) => mapToUi(m, i)));
+      setSearchActive(true);
+    } catch (_) {
+      // noop for demo
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = () => {
-    setSearchActive(true)
-  }
+    void fetchMedicines(searchQuery);
+  };
 
-  const toggleWishlist = (medId: number) => {
-    setWishlistItems((prev) => (prev.includes(medId) ? prev.filter((id) => id !== medId) : [...prev, medId]))
-
-    // Show notification for wishlist addition
-    if (!wishlistItems.includes(medId)) {
-      const med = searchResults.find((m) => m.id === medId)
-      if (med) {
-        // In a real app, this would trigger a toast notification
-        alert(`Request verification for ${med.name} to doctor has been sent`)
+  const toggleWishlist = async (medId: number) => {
+    const isAdding = !wishlistItems.includes(medId);
+    setWishlistItems((prev) =>
+      isAdding ? [...prev, medId] : prev.filter((id) => id !== medId)
+    );
+    if (isAdding) {
+      try {
+        await fetch("/api/wishlists", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: 1, medicine_id: medId, quantity: 1 }),
+        });
+        // Optimistically increment demand locally
+        setResults((prev) =>
+          prev.map((m) =>
+            m.id === medId ? { ...m, currentDemand: m.currentDemand + 1 } : m
+          )
+        );
+        alert("Added to wishlist and notified your doctor for verification");
+      } catch (_) {
+        // rollback on error
+        setWishlistItems((prev) => prev.filter((id) => id !== medId));
       }
     }
-  }
+  };
 
   const getDemandProgress = (current: number, required: number) => {
-    return (current / required) * 100
-  }
+    return (current / required) * 100;
+  };
 
   return (
     <DashboardLayout>
@@ -89,7 +132,9 @@ export default function BuyMedsPage() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Buy Medicines</h1>
-          <p className="text-gray-600">Search for medications and join community bulk orders</p>
+          <p className="text-gray-600">
+            Search for medications and join community bulk orders
+          </p>
         </div>
 
         {/* Search Bar */}
@@ -104,9 +149,9 @@ export default function BuyMedsPage() {
                   className="text-lg"
                 />
               </div>
-              <Button onClick={handleSearch} size="lg">
+              <Button onClick={handleSearch} size="lg" disabled={loading}>
                 <Search className="h-5 w-5 mr-2" />
-                Search
+                {loading ? "Searching..." : "Search"}
               </Button>
             </div>
           </CardContent>
@@ -130,7 +175,9 @@ export default function BuyMedsPage() {
                   >
                     <div className="text-center">
                       <p className="font-medium truncate">{search.name}</p>
-                      <p className="text-sm text-gray-500">{search.lastSearched}</p>
+                      <p className="text-sm text-gray-500">
+                        {search.lastSearched}
+                      </p>
                     </div>
                     <div className="flex flex-col space-y-2 items-center">
                       <Badge
@@ -148,8 +195,8 @@ export default function BuyMedsPage() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          setSearchQuery(search.name)
-                          setSearchActive(true)
+                          setSearchQuery(search.name);
+                          setSearchActive(true);
                         }}
                       >
                         Search Again
@@ -167,12 +214,15 @@ export default function BuyMedsPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Search Results</h2>
-              <p className="text-gray-600">{searchResults.length} medicines found</p>
+              <p className="text-gray-600">{results.length} medicines found</p>
             </div>
 
-            {searchResults.map((med) => {
-              const demandProgress = getDemandProgress(med.currentDemand, med.requiredDemand)
-              const isInWishlist = wishlistItems.includes(med.id)
+            {results.map((med) => {
+              const demandProgress = getDemandProgress(
+                med.currentDemand,
+                med.requiredDemand
+              );
+              const isInWishlist = wishlistItems.includes(med.id);
 
               return (
                 <Card key={med.id} className="overflow-hidden">
@@ -181,9 +231,13 @@ export default function BuyMedsPage() {
                       {/* Medicine Info */}
                       <div className="lg:col-span-2 space-y-4">
                         <div>
-                          <h3 className="text-xl font-semibold text-gray-900">{med.name}</h3>
+                          <h3 className="text-xl font-semibold text-gray-900">
+                            {med.name}
+                          </h3>
                           <p className="text-gray-600">{med.genericName}</p>
-                          <p className="text-sm text-gray-500 mt-1">{med.description}</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {med.description}
+                          </p>
                         </div>
 
                         {/* Location and Time */}
@@ -211,7 +265,8 @@ export default function BuyMedsPage() {
                           </div>
                           <Progress value={demandProgress} className="h-2" />
                           <p className="text-xs text-gray-500">
-                            {med.requiredDemand - med.currentDemand} more people needed for bulk order
+                            {med.requiredDemand - med.currentDemand} more people
+                            needed for bulk order
                           </p>
                         </div>
                       </div>
@@ -221,16 +276,26 @@ export default function BuyMedsPage() {
                         <div className="bg-gray-50 p-4 rounded-lg">
                           <div className="space-y-2">
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-600">Current Price:</span>
-                              <span className="text-lg font-semibold text-gray-900">${med.currentPrice}</span>
+                              <span className="text-sm text-gray-600">
+                                Current Price:
+                              </span>
+                              <span className="text-lg font-semibold text-gray-900">
+                                ${med.currentPrice}
+                              </span>
                             </div>
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-gray-600">Bulk Price:</span>
-                              <span className="text-lg font-semibold text-green-600">${med.bulkPrice}</span>
+                              <span className="text-sm text-gray-600">
+                                Bulk Price:
+                              </span>
+                              <span className="text-lg font-semibold text-green-600">
+                                ${med.bulkPrice}
+                              </span>
                             </div>
                             <div className="pt-2 border-t">
                               <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium">You Save:</span>
+                                <span className="text-sm font-medium">
+                                  You Save:
+                                </span>
                                 <span className="text-lg font-bold text-green-600">
                                   ${med.currentPrice - med.bulkPrice}
                                 </span>
@@ -259,25 +324,32 @@ export default function BuyMedsPage() {
                           </Button>
 
                           {isInWishlist && (
-                            <p className="text-xs text-center text-gray-500">Waiting for doctor approval</p>
+                            <p className="text-xs text-center text-gray-500">
+                              Waiting for doctor approval
+                            </p>
                           )}
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         )}
 
         {/* Empty State */}
-        {searchActive && searchResults.length === 0 && (
+        {searchActive && results.length === 0 && (
           <Card>
             <CardContent className="p-12 text-center">
               <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No medicines found</h3>
-              <p className="text-gray-600 mb-4">Try searching with a different medicine name or check the spelling.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No medicines found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Try searching with a different medicine name or check the
+                spelling.
+              </p>
               <Button variant="outline" onClick={() => setSearchActive(false)}>
                 View Recent Searches
               </Button>
@@ -286,5 +358,5 @@ export default function BuyMedsPage() {
         )}
       </div>
     </DashboardLayout>
-  )
+  );
 }
