@@ -89,7 +89,7 @@
       "description": "Long-acting insulin for diabetes",
       "created_at": "2025-09-19T09:30:00.000Z",
       "expire_at": "2026-02-10",
-      "current_demand": 17,
+      "current_demand": 20,
       "required_demand": 30
     },
     {
@@ -109,7 +109,7 @@
       "description": "Breast cancer monoclonal antibody therapy",
       "created_at": "2025-09-19T09:50:00.000Z",
       "expire_at": "2026-08-20",
-      "current_demand": 12,
+      "current_demand": 13,
       "required_demand": 22
     },
     {
@@ -129,7 +129,7 @@
       "description": "Checkpoint inhibitor for cancer treatment",
       "created_at": "2025-09-19T10:10:00.000Z",
       "expire_at": "2026-10-15",
-      "current_demand": 10,
+      "current_demand": 11,
       "required_demand": 20
     },
     {
@@ -219,7 +219,7 @@
       "description": "Antiviral for Hepatitis C",
       "created_at": "2025-09-19T11:40:00.000Z",
       "expire_at": "2026-05-11",
-      "current_demand": 19,
+      "current_demand": 22,
       "required_demand": 28
     },
     {
@@ -372,22 +372,6 @@
     },
     {
       "user_id": 9,
-      "medicine_id": 4,
-      "quantity": 1,
-      "approved": true,
-      "id": 15,
-      "created_at": "2025-09-20T21:20:16.160088"
-    },
-    {
-      "user_id": 9,
-      "medicine_id": 17,
-      "quantity": 1,
-      "approved": true,
-      "id": 16,
-      "created_at": "2025-09-20T21:24:31.430902"
-    },
-    {
-      "user_id": 9,
       "medicine_id": 5,
       "quantity": 1,
       "approved": true,
@@ -400,7 +384,44 @@
       "quantity": 1,
       "approved": false,
       "id": 19,
-      "created_at": "2025-09-20T22:16:24.031020"
+      "created_at": "2025-09-20T22:16:24.031020",
+      "rejected_at": "2025-09-20T23:41:59.036066"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 17,
+      "quantity": 1,
+      "approved": false,
+      "id": 22,
+      "created_at": "2025-09-20T23:16:52.307068",
+      "rejected_at": "2025-09-20T23:41:59.196787"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 8,
+      "quantity": 1,
+      "approved": false,
+      "id": 25,
+      "created_at": "2025-09-20T23:32:00.463064",
+      "rejected_at": "2025-09-20T23:41:59.349018"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 4,
+      "quantity": 1,
+      "approved": false,
+      "id": 26,
+      "created_at": "2025-09-20T23:41:23.142226",
+      "rejected_at": "2025-09-20T23:41:59.494006"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 6,
+      "quantity": 1,
+      "approved": false,
+      "id": 27,
+      "created_at": "2025-09-20T23:41:28.892787",
+      "rejected_at": "2025-09-20T23:41:59.629604"
     }
   ],
   "donations": [
@@ -770,6 +791,118 @@
       "read": true,
       "id": 45,
       "created_at": "2025-09-20T22:16:24.070522"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
+      "read": false,
+      "id": 46,
+      "created_at": "2025-09-20T23:16:43.814802"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
+      "read": false,
+      "id": 47,
+      "created_at": "2025-09-20T23:16:48.050219"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
+      "read": false,
+      "id": 48,
+      "created_at": "2025-09-20T23:16:52.311068"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
+      "read": false,
+      "id": 49,
+      "created_at": "2025-09-20T23:19:53.244752"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
+      "read": false,
+      "id": 50,
+      "created_at": "2025-09-20T23:22:25.131054"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Nivolumab (Opdivo) 100mg was added to wishlist.",
+      "read": false,
+      "id": 51,
+      "created_at": "2025-09-20T23:32:00.465155"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
+      "read": false,
+      "id": 52,
+      "created_at": "2025-09-20T23:41:23.146823"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Trastuzumab (Herceptin) 150mg was added to wishlist.",
+      "read": false,
+      "id": 53,
+      "created_at": "2025-09-20T23:41:28.896699"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 54,
+      "created_at": "2025-09-20T23:41:59.037407"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 55,
+      "created_at": "2025-09-20T23:41:59.198515"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 56,
+      "created_at": "2025-09-20T23:41:59.350240"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 57,
+      "created_at": "2025-09-20T23:41:59.495091"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 58,
+      "created_at": "2025-09-20T23:41:59.630984"
     }
   ],
   "transactions": [],
@@ -778,17 +911,30 @@
     "counters": {
       "users": 9,
       "medicines": 30,
-      "wishlists": 19,
+      "wishlists": 27,
       "donations": 16,
       "grants": 1,
       "profiles": 9,
       "counters": 2,
       "demoData": 0,
-      "notifications": 45,
+      "notifications": 58,
       "transactions": 0
     }
   },
   "micro_grants": [
+    {
+      "id": 10,
+      "requesterName": "NUNU",
+      "title": "asdf",
+      "description": "asdf",
+      "amountNeeded": 23,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 9
+    },
     {
       "id": 1,
       "requesterName": "NUNU",
