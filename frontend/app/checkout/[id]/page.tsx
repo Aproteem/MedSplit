@@ -1,18 +1,20 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { CreditCard, Lock, MapPin, Heart, Pill } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { CreditCard, Lock, MapPin, Heart, Pill } from "lucide-react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { api } from "@/lib/api";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { DashboardLayout } from "@/components/dashboard-layout";
 
 // Mock data - in a real app, this would come from the API based on the ID
 const getCheckoutData = (id: string) => {
@@ -25,7 +27,7 @@ const getCheckoutData = (id: string) => {
       amount: 25,
       description: "Help Maria cover her insulin costs during unemployment",
       icon: Heart,
-    }
+    };
   } else {
     return {
       type: "medicine",
@@ -38,17 +40,19 @@ const getCheckoutData = (id: string) => {
       savings: 17,
       estimatedDelivery: "3-5 business days",
       icon: Pill,
-    }
+    };
   }
-}
+};
 
 export default function CheckoutPage() {
-  const params = useParams()
-  const router = useRouter()
-  const [paymentMethod, setPaymentMethod] = useState("card")
-  const [isProcessing, setIsProcessing] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useCurrentUser();
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const checkoutData = getCheckoutData(params.id as string)
+  const checkoutData = getCheckoutData(params.id as string);
 
   const [formData, setFormData] = useState({
     email: "john.doe@email.com",
@@ -62,25 +66,73 @@ export default function CheckoutPage() {
     expiryDate: "",
     cvv: "",
     nameOnCard: "",
-  })
+  });
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsProcessing(true)
+    e.preventDefault();
+    setIsProcessing(true);
 
     // Simulate payment processing
     setTimeout(() => {
-      setIsProcessing(false)
+      setIsProcessing(false);
+      // Update counters for medicine purchases only
+      try {
+        if (checkoutData.type === "medicine" && user?.id) {
+          void (async () => {
+            try {
+              const listRes = await fetch(
+                api(`/api/counters?user_id=${user.id}`)
+              );
+              if (listRes.ok) {
+                const list = await listRes.json();
+                const c = Array.isArray(list) ? list[0] : null;
+                if (c && c.id) {
+                  const current = Number(c.medicine_purchases || 0);
+                  await fetch(api(`/api/counters/${c.id}`), {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ medicine_purchases: current + 1 }),
+                  });
+                } else {
+                  await fetch(api(`/api/counters`), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      user_id: user.id,
+                      medicine_purchases: 1,
+                      donations: 0,
+                      grant_given: 0,
+                    }),
+                  });
+                }
+              }
+            } catch {}
+          })();
+        }
+      } catch {}
+      // If a notif_id was provided (from Take Action), delete the notification now that checkout is done
+      try {
+        const notifId = searchParams.get("notif_id");
+        if (notifId) {
+          void (async () => {
+            try {
+              await fetch(api(`/api/notifications/${notifId}`), {
+                method: "DELETE",
+              });
+            } catch {}
+          })();
+        }
+      } catch {}
       // Redirect to receipt page
-      router.push(`/receipt/${params.id}`)
-    }, 3000)
-  }
+      router.push(`/receipt/${params.id}`);
+    }, 3000);
+  };
 
-  const IconComponent = checkoutData.icon
+  const IconComponent = checkoutData.icon;
 
   return (
     <DashboardLayout>
@@ -88,7 +140,10 @@ export default function CheckoutPage() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-          <p className="text-gray-600">Complete your {checkoutData.type === "grant" ? "donation" : "purchase"}</p>
+          <p className="text-gray-600">
+            Complete your{" "}
+            {checkoutData.type === "grant" ? "donation" : "purchase"}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -107,19 +162,32 @@ export default function CheckoutPage() {
                     <IconComponent className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{checkoutData.title}</h3>
+                    <h3 className="font-semibold text-gray-900">
+                      {checkoutData.title}
+                    </h3>
                     {checkoutData.type === "medicine" ? (
                       <>
-                        <p className="text-gray-600">{checkoutData.genericName}</p>
-                        <p className="text-sm text-gray-500">{checkoutData.quantity}</p>
-                        <Badge variant="default" className="bg-green-100 text-green-800 mt-2">
+                        <p className="text-gray-600">
+                          {checkoutData.genericName}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {checkoutData.quantity}
+                        </p>
+                        <Badge
+                          variant="default"
+                          className="bg-green-100 text-green-800 mt-2"
+                        >
                           Bulk Order Price
                         </Badge>
                       </>
                     ) : (
                       <>
-                        <p className="text-gray-600">Donation to {checkoutData.recipient}</p>
-                        <p className="text-sm text-gray-500">{checkoutData.description}</p>
+                        <p className="text-gray-600">
+                          Donation to {checkoutData.recipient}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {checkoutData.description}
+                        </p>
                       </>
                     )}
                   </div>
@@ -132,15 +200,21 @@ export default function CheckoutPage() {
                     <>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Original Price:</span>
-                        <span className="line-through text-gray-500">${checkoutData.originalPrice}</span>
+                        <span className="line-through text-gray-500">
+                          ${checkoutData.originalPrice}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Bulk Price:</span>
-                        <span className="font-semibold">${checkoutData.bulkPrice}</span>
+                        <span className="font-semibold">
+                          ${checkoutData.bulkPrice}
+                        </span>
                       </div>
                       <div className="flex justify-between text-green-600">
                         <span>You Save:</span>
-                        <span className="font-semibold">${checkoutData.savings}</span>
+                        <span className="font-semibold">
+                          ${checkoutData.savings}
+                        </span>
                       </div>
                       <Separator />
                       <div className="flex justify-between text-lg font-bold">
@@ -152,7 +226,9 @@ export default function CheckoutPage() {
                     <>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Donation Amount:</span>
-                        <span className="font-semibold">${checkoutData.amount}</span>
+                        <span className="font-semibold">
+                          ${checkoutData.amount}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm text-gray-500">
                         <span>Processing Fee:</span>
@@ -171,9 +247,13 @@ export default function CheckoutPage() {
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <div className="flex items-center space-x-2 text-blue-800">
                       <MapPin className="h-4 w-4" />
-                      <span className="text-sm font-medium">Estimated Delivery</span>
+                      <span className="text-sm font-medium">
+                        Estimated Delivery
+                      </span>
                     </div>
-                    <p className="text-blue-700 text-sm mt-1">{checkoutData.estimatedDelivery}</p>
+                    <p className="text-blue-700 text-sm mt-1">
+                      {checkoutData.estimatedDelivery}
+                    </p>
                   </div>
                 )}
               </CardContent>
@@ -195,7 +275,9 @@ export default function CheckoutPage() {
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       required
                     />
                   </div>
@@ -215,7 +297,9 @@ export default function CheckoutPage() {
                         <Input
                           id="firstName"
                           value={formData.firstName}
-                          onChange={(e) => handleInputChange("firstName", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("firstName", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -224,7 +308,9 @@ export default function CheckoutPage() {
                         <Input
                           id="lastName"
                           value={formData.lastName}
-                          onChange={(e) => handleInputChange("lastName", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("lastName", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -234,7 +320,9 @@ export default function CheckoutPage() {
                       <Input
                         id="address"
                         value={formData.address}
-                        onChange={(e) => handleInputChange("address", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("address", e.target.value)
+                        }
                         required
                       />
                     </div>
@@ -244,7 +332,9 @@ export default function CheckoutPage() {
                         <Input
                           id="city"
                           value={formData.city}
-                          onChange={(e) => handleInputChange("city", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("city", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -253,7 +343,9 @@ export default function CheckoutPage() {
                         <Input
                           id="state"
                           value={formData.state}
-                          onChange={(e) => handleInputChange("state", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("state", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -262,7 +354,9 @@ export default function CheckoutPage() {
                         <Input
                           id="zipCode"
                           value={formData.zipCode}
-                          onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("zipCode", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -277,7 +371,10 @@ export default function CheckoutPage() {
                   <CardTitle>Payment Method</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={setPaymentMethod}
+                  >
                     <div className="flex items-center space-x-2 p-3 border rounded-lg">
                       <RadioGroupItem value="card" id="card" />
                       <CreditCard className="h-4 w-4" />
@@ -295,7 +392,9 @@ export default function CheckoutPage() {
                           id="cardNumber"
                           placeholder="1234 5678 9012 3456"
                           value={formData.cardNumber}
-                          onChange={(e) => handleInputChange("cardNumber", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("cardNumber", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -306,7 +405,9 @@ export default function CheckoutPage() {
                             id="expiryDate"
                             placeholder="MM/YY"
                             value={formData.expiryDate}
-                            onChange={(e) => handleInputChange("expiryDate", e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange("expiryDate", e.target.value)
+                            }
                             required
                           />
                         </div>
@@ -316,7 +417,9 @@ export default function CheckoutPage() {
                             id="cvv"
                             placeholder="123"
                             value={formData.cvv}
-                            onChange={(e) => handleInputChange("cvv", e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange("cvv", e.target.value)
+                            }
                             required
                           />
                         </div>
@@ -326,7 +429,9 @@ export default function CheckoutPage() {
                         <Input
                           id="nameOnCard"
                           value={formData.nameOnCard}
-                          onChange={(e) => handleInputChange("nameOnCard", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("nameOnCard", e.target.value)
+                          }
                           required
                         />
                       </div>
@@ -336,14 +441,23 @@ export default function CheckoutPage() {
               </Card>
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full h-12 text-lg" disabled={isProcessing}>
+              <Button
+                type="submit"
+                className="w-full h-12 text-lg"
+                disabled={isProcessing}
+              >
                 {isProcessing ? (
                   "Processing..."
                 ) : (
                   <>
                     <Lock className="h-5 w-5 mr-2" />
-                    {checkoutData.type === "grant" ? "Complete Donation" : "Complete Purchase"} - $
-                    {checkoutData.type === "grant" ? checkoutData.amount : checkoutData.bulkPrice}
+                    {checkoutData.type === "grant"
+                      ? "Complete Donation"
+                      : "Complete Purchase"}{" "}
+                    - $
+                    {checkoutData.type === "grant"
+                      ? checkoutData.amount
+                      : checkoutData.bulkPrice}
                   </>
                 )}
               </Button>
@@ -357,5 +471,5 @@ export default function CheckoutPage() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

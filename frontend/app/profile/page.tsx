@@ -83,8 +83,21 @@ export default function ProfilePage() {
             setCounters({
               medicine_purchases: Number(c.medicine_purchases || 0),
               donations: Number(c.donations || 0),
-              grant_given: Number(c.grant_given || 0),
+              // Per request, keep Grants Supported at 0 for now
+              grant_given: 0,
             });
+        }
+        // Dynamically compute total donations made by this user (lifetime)
+        const dRes = await fetch(api(`/api/donations?donor_id=${user.id}`));
+        if (dRes.ok) {
+          const list = await dRes.json();
+          const totalDonations = Array.isArray(list) ? list.length : 0;
+          setCounters((prev) => ({
+            ...prev,
+            donations: totalDonations,
+            // Ensure grants remain 0 as requested
+            grant_given: 0,
+          }));
         }
       } catch (_) {}
     };
@@ -166,7 +179,9 @@ export default function ProfilePage() {
       {
         label: "Community Impact",
         value: String(
-          counters.medicine_purchases + counters.donations + counters.grant_given
+          counters.medicine_purchases +
+            counters.donations +
+            counters.grant_given
         ),
         icon: "❤️",
       },
@@ -215,7 +230,10 @@ export default function ProfilePage() {
                   <Avatar className="h-24 w-24">
                     <AvatarImage src="/user-avatar.jpg" />
                     <AvatarFallback className="text-2xl">
-                      {(profileData.name || " ").trim().slice(0, 2).toUpperCase() || "U"}
+                      {(profileData.name || " ")
+                        .trim()
+                        .slice(0, 2)
+                        .toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
                   {isEditing && (
@@ -236,9 +254,14 @@ export default function ProfilePage() {
                 </p>
 
                 <div className="flex justify-center space-x-2 mb-4">
-                  <Badge variant="default" className="bg-green-100 text-green-800">
+                  <Badge
+                    variant="default"
+                    className="bg-green-100 text-green-800"
+                  >
                     <Shield className="h-3 w-3 mr-1" />
-                    {user?.role === "doctor" ? "Verified Doctor" : "Verified Patient"}
+                    {user?.role === "doctor"
+                      ? "Verified Doctor"
+                      : "Verified Patient"}
                   </Badge>
                 </div>
 
@@ -427,9 +450,9 @@ export default function ProfilePage() {
                             Privacy Notice
                           </p>
                           <p className="text-yellow-700 mt-1">
-                            Your medical information is encrypted and only shared
-                            with verified healthcare providers for medication
-                            verification purposes.
+                            Your medical information is encrypted and only
+                            shared with verified healthcare providers for
+                            medication verification purposes.
                           </p>
                         </div>
                       </div>
