@@ -55,7 +55,7 @@ export default function HomePage() {
                 {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
             )}
-            <Link href="/auth">
+            <Link href="/login">
               <Button variant="outline" className="hover-lift hover-glow bg-transparent">
                 Login
               </Button>

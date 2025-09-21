@@ -111,7 +111,7 @@ export default function DoctorDashboardPage() {
             <p className="text-gray-600">Review and decide on patient requests</p>
           </div>
           <div className="flex items-center">
-            <a href="/auth" className="text-sm text-red-600 hover:underline">Sign Out</a>
+            <a href="/" className="text-sm text-red-600 hover:underline">Sign Out</a>
           </div>
         </div>
 

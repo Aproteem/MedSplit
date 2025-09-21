@@ -325,7 +325,7 @@ export default function ProfilePage() {
                   className="mt-6 w-full"
                   onClick={() => {
                     setUser(null);
-                    window.location.href = "/login";
+                    window.location.href = "/";
                   }}
                 >
                   Sign Out

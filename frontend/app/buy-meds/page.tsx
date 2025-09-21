@@ -205,9 +205,9 @@ export default function BuyMedsPage() {
         {!searchActive && (
           <Card>
             <CardHeader>
-              <CardTitle>Recent Searches</CardTitle>
+              <CardTitle>New Availables</CardTitle>
               <CardDescription>
-                Quick access to your previously searched medications
+                Quick access to new available medications
               </CardDescription>
             </CardHeader>
             <CardContent>

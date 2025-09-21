@@ -1,9 +1,77 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 import json
 import os
 import copy
 from datetime import datetime
+import typing as _typing
+
+# Optional: Google Generative AI (Gemini)
+# Load .env if present
+try:
+    from dotenv import load_dotenv  # type: ignore
+    # Attempt to load backend/.env relative to this file first, then default
+    _env_path = os.path.join(os.path.dirname(__file__), '.env')
+    if os.path.exists(_env_path):
+        load_dotenv(_env_path)
+    else:
+        load_dotenv()
+except Exception:
+    pass
+
+_GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-2.5-pro')
+_GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+def _collapse_messages_for_llm(messages: _typing.List[dict]) -> str:
+    """Flatten chat messages into a single prompt string for basic LLMs.
+
+    Expected message shape: { role: 'system'|'user'|'assistant', content: str }
+    """
+    if not isinstance(messages, list):
+        return "User: Hello!\nAssistant:"
+    lines: _typing.List[str] = []
+    for m in messages:
+        role = str(m.get('role', 'user')).lower()
+        content = str(m.get('content', '')).strip()
+        if not content:
+            continue
+        if role == 'system':
+            lines.append(f"[System]\n{content}\n")
+        elif role == 'assistant':
+            lines.append(f"Assistant:\n{content}\n")
+        else:
+            lines.append(f"User:\n{content}\n")
+    return "\n".join(lines).strip() or "User: Hello!\nAssistant:"
+
+def _extract_text_from_response(resp) -> str:
+    """Best-effort extraction of text from Gemini response across shapes."""
+    try:
+        txt = getattr(resp, 'text', None)
+        if isinstance(txt, str) and txt.strip():
+            return txt.strip()
+    except Exception:
+        pass
+    # Fall back to candidates aggregation
+    try:
+        candidates = getattr(resp, 'candidates', None) or []
+        for cand in candidates:
+            content = getattr(cand, 'content', None)
+            parts = getattr(content, 'parts', None) or []
+            texts = []
+            for p in parts:
+                try:
+                    t = getattr(p, 'text', None)
+                    if not t and isinstance(p, dict):
+                        t = p.get('text')
+                    if isinstance(t, str) and t:
+                        texts.append(t)
+                except Exception:
+                    continue
+            if texts:
+                return "".join(texts).strip()
+    except Exception:
+        pass
+    return ""
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -192,6 +260,158 @@ def clear_all_data():
         return jsonify({'message': 'All data cleared successfully'})
     except Exception:
         return jsonify({'error': 'Failed to clear data'}), 500
+
+# -----------------------------
+# Chatbot (Gemini) endpoint
+# -----------------------------
+
+@app.route('/api/chat', methods=['POST'])
+def chat_route():
+    try:
+        # Lazy import so the server can run without the dependency when not used
+        try:
+            import google.generativeai as _genai  # type: ignore
+        except Exception as e:
+            return jsonify({'error': 'Chat dependency not installed on server'}), 500
+
+        # Accept both JSON and form-data
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            raw_messages = request.form.get('messages')
+            import json as _json
+            messages = _json.loads(raw_messages) if raw_messages else []
+        else:
+            messages = request.json.get('messages', []) if request.is_json else []
+
+        prompt = _collapse_messages_for_llm(messages)
+
+        # If a file is attached, prepend a note
+        uploaded_file = None
+        try:
+            uploaded_file = request.files.get('file')
+        except Exception:
+            uploaded_file = None
+        if uploaded_file is not None:
+            prompt = f"[User uploaded file: {uploaded_file.filename}]\n" + prompt
+
+        # Add a system priming for healthcare advisor
+        system_instruction = (
+            "You are MedSplit, a compassionate healthcare advisor assistant. "
+            "Prefer brevity (1–2 sentences). For greetings, give a short friendly reply and a concise follow-up question. "
+            "Only reference user documents if the user asks or context clearly requires it. "
+            "Add safety disclaimers only when giving medical advice or discussing risks."
+        )
+        full_prompt = f"[System]\n{system_instruction}\n\n{prompt}"
+
+        # Fallback response when GEMINI_API_KEY is missing
+        if not _GEMINI_API_KEY:
+            reply = (
+                "I'm your MedSplit healthcare assistant. I can't access AI right now, "
+                "but I can help summarize and guide you based on your message and uploaded document names. "
+                "Please consult a licensed clinician for medical decisions."
+            )
+            return jsonify({'reply': reply})
+
+        _genai.configure(api_key=_GEMINI_API_KEY)
+
+        # Quick mode support for faster, shorter outputs
+        quick = False
+        try:
+            if request.content_type and 'multipart/form-data' in (request.content_type or ''):
+                quick = (request.form.get('quick') == '1')
+            elif request.is_json:
+                quick = bool((request.json or {}).get('quick'))
+        except Exception:
+            quick = False
+
+        model = _genai.GenerativeModel(_GEMINI_MODEL)
+        if quick:
+            resp = model.generate_content(full_prompt, generation_config={
+                'max_output_tokens': 120,
+                'temperature': 0.4,
+                'top_p': 0.8,
+                'top_k': 40,
+            })
+        else:
+            resp = model.generate_content(full_prompt)
+        # Robust extraction across shapes
+        reply = _extract_text_from_response(resp)
+        # If quick mode produced no text, fall back to a standard generation
+        if quick and not reply:
+            try:
+                resp_full = model.generate_content(full_prompt)
+                reply = _extract_text_from_response(resp_full)
+            except Exception:
+                pass
+        if not reply:
+            reply = "I couldn't generate a response. Please try again."
+        return jsonify({'reply': reply})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chat/stream', methods=['POST'])
+def chat_stream_route():
+    """Server-Sent Events streaming endpoint for faster perceived responses."""
+    try:
+        try:
+            import google.generativeai as _genai  # type: ignore
+        except Exception:
+            return jsonify({'error': 'Chat dependency not installed on server'}), 500
+
+        # Accept JSON only for streaming for simplicity
+        if not request.is_json:
+            return jsonify({'error': 'application/json required'}), 400
+        messages = request.json.get('messages', [])
+        quick = bool(request.json.get('quick', False))
+
+        prompt = _collapse_messages_for_llm(messages)
+
+        system_instruction = (
+            "You are MedSplit, a compassionate healthcare advisor assistant. "
+            "Prefer brevity (1–2 sentences). For greetings, give a short friendly reply and a concise follow-up question. "
+            "Only reference user documents if the user asks or context clearly requires it. "
+            "Add safety disclaimers only when giving medical advice or discussing risks."
+        )
+        full_prompt = f"[System]\n{system_instruction}\n\n{prompt}"
+
+        if not _GEMINI_API_KEY:
+            # Stream a single fallback message
+            def _fallback_gen():
+                yield "data: I'm your MedSplit assistant. AI is unavailable right now.\n\n"
+                yield "event: done\ndata: [DONE]\n\n"
+            return Response(_fallback_gen(), mimetype='text/event-stream', headers={
+                'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'
+            })
+
+        _genai.configure(api_key=_GEMINI_API_KEY)
+
+        model = _genai.GenerativeModel(_GEMINI_MODEL)
+        gen_cfg = {'max_output_tokens': 120, 'temperature': 0.4, 'top_p': 0.8, 'top_k': 40} if quick else None
+
+        def event_stream():
+            try:
+                if gen_cfg:
+                    responses = model.generate_content(full_prompt, stream=True, generation_config=gen_cfg)
+                else:
+                    responses = model.generate_content(full_prompt, stream=True)
+                for chunk in responses:
+                    try:
+                        piece = _extract_text_from_response(chunk)
+                        if piece:
+                            # Normalize newlines for SSE
+                            piece = piece.replace("\r\n", "\n")
+                            for line in piece.split("\n"):
+                                if line:
+                                    yield f"data: {line}\n\n"
+                    except Exception:
+                        continue
+                yield "event: done\ndata: [DONE]\n\n"
+            except Exception as e:
+                yield f"event: error\ndata: {str(e)}\n\n"
+        return Response(event_stream(), mimetype='text/event-stream', headers={
+            'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # -----------------------------
 # Generic helpers for CRUD

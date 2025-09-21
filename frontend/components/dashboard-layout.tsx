@@ -161,7 +161,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <p className="text-xs text-muted-foreground truncate">{roleLabel}</p>
           </div>
         </div>
-        <Link href="/auth">
+        <Link href="/">
           <Button variant="ghost" size="sm" className="w-full justify-start hover-lift">
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
