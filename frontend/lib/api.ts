@@ -4,5 +4,3 @@ export function api(path: string) {
   if (path.startsWith("/")) return `${API_URL}${path}`;
   return `${API_URL}/${path}`;
 }
-
-

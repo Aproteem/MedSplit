@@ -24,5 +24,3 @@ export function useCurrentUser() {
 
   return { user, setUser: save };
 }
-
-

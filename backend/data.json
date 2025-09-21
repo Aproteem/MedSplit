@@ -119,7 +119,7 @@
       "description": "Breast cancer monoclonal antibody therapy",
       "created_at": "2025-09-19T09:50:00.000Z",
       "expire_at": "2026-08-20",
-      "current_demand": 13,
+      "current_demand": 14,
       "required_demand": 22
     },
     {
@@ -129,7 +129,7 @@
       "description": "Immunotherapy for various cancers",
       "created_at": "2025-09-19T10:00:00.000Z",
       "expire_at": "2026-11-11",
-      "current_demand": 9,
+      "current_demand": 10,
       "required_demand": 18
     },
     {
@@ -239,7 +239,7 @@
       "description": "Combination Hepatitis C treatment",
       "created_at": "2025-09-19T11:50:00.000Z",
       "expire_at": "2026-10-01",
-      "current_demand": 9,
+      "current_demand": 11,
       "required_demand": 19
     },
     {
@@ -399,15 +399,6 @@
     },
     {
       "user_id": 9,
-      "medicine_id": 17,
-      "quantity": 1,
-      "approved": false,
-      "id": 22,
-      "created_at": "2025-09-20T23:16:52.307068",
-      "rejected_at": "2025-09-20T23:41:59.196787"
-    },
-    {
-      "user_id": 9,
       "medicine_id": 8,
       "quantity": 1,
       "approved": false,
@@ -433,12 +424,29 @@
       "created_at": "2025-09-20T23:05:51.307726"
     },
     {
-      "user_id": 10,
-      "medicine_id": 3,
+      "user_id": 9,
+      "medicine_id": 6,
       "quantity": 1,
       "approved": true,
-      "id": 22,
-      "created_at": "2025-09-21T00:15:22.101533"
+      "id": 26,
+      "created_at": "2025-09-21T00:41:56.433086"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 7,
+      "quantity": 1,
+      "approved": false,
+      "id": 28,
+      "created_at": "2025-09-21T01:53:23.919040",
+      "rejected_at": "2025-09-21T01:53:50.030084"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 18,
+      "quantity": 1,
+      "approved": false,
+      "id": 29,
+      "created_at": "2025-09-21T02:00:45.210160"
     }
   ],
   "donations": [
@@ -633,7 +641,11 @@
       "doctor_name": "Dr. Team",
       "notes": "happiest day of the life",
       "id": 19,
-      "created_at": "2025-09-20T23:43:40.508695"
+      "created_at": "2025-09-20T23:43:40.508695",
+      "claimed_by": 9,
+      "claimed_at": "2025-09-21T02:02:22.841114",
+      "claim_status": "rejected",
+      "claim_decided_at": "2025-09-21T02:03:47.436656"
     },
     {
       "donor_id": 10,
@@ -813,7 +825,7 @@
       "user_id": 9,
       "medicine_purchases": 4,
       "donations": 0,
-      "grant_given": 0,
+      "grant_given": 2,
       "id": 2,
       "created_at": "2025-09-20T21:21:00.450123"
     },
@@ -988,6 +1000,84 @@
       "id": 66,
       "created_at": "2025-09-21T00:19:09.755930",
       "read": true
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Trastuzumab (Herceptin) 150mg was added to wishlist.",
+      "read": true,
+      "id": 67,
+      "created_at": "2025-09-21T00:41:56.435796"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg was added to wishlist.",
+      "read": false,
+      "id": 68,
+      "created_at": "2025-09-21T00:43:07.417728"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Pembrolizumab (Keytruda) 100mg was added to wishlist.",
+      "read": true,
+      "id": 69,
+      "created_at": "2025-09-21T01:53:23.921649"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Approved",
+      "message": "Your request for Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg has been approved.",
+      "action_url": "/checkout/18",
+      "id": 70,
+      "created_at": "2025-09-21T01:53:49.423254"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your request for Pembrolizumab (Keytruda) 100mg was not approved at this time.",
+      "id": 71,
+      "created_at": "2025-09-21T01:53:50.031596"
+    },
+    {
+      "user_id": 9,
+      "type": "approval",
+      "title": "Request Approved",
+      "message": "Your request for Trastuzumab (Herceptin) 150mg has been approved.",
+      "action_url": "/checkout/6",
+      "id": 72,
+      "created_at": "2025-09-21T01:53:51.104731"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg was added to wishlist.",
+      "read": false,
+      "id": 73,
+      "created_at": "2025-09-21T02:00:45.213919"
+    },
+    {
+      "user_id": 9,
+      "type": "donation",
+      "title": "Request Submitted",
+      "message": "You requested 9/11.",
+      "id": 74,
+      "created_at": "2025-09-21T02:02:22.842277"
+    },
+    {
+      "user_id": 9,
+      "type": "donation",
+      "title": "Request Rejected",
+      "message": "Your request for 9/11 was rejected.",
+      "id": 75,
+      "created_at": "2025-09-21T02:03:47.439579"
     }
   ],
   "transactions": [],
@@ -996,13 +1086,13 @@
     "counters": {
       "users": 10,
       "medicines": 30,
-      "wishlists": 22,
+      "wishlists": 29,
       "donations": 20,
       "grants": 1,
       "profiles": 10,
       "counters": 3,
       "demoData": 0,
-      "notifications": 66,
+      "notifications": 75,
       "transactions": 0
     }
   },
@@ -1013,9 +1103,9 @@
       "title": "asdf",
       "description": "asdf",
       "amountNeeded": 23,
-      "amountRaised": 0,
+      "amountRaised": 23,
       "timePosted": "just now",
-      "supporters": 0,
+      "supporters": 1,
       "verified": false,
       "urgent": false,
       "requestor_id": 9
@@ -1026,9 +1116,9 @@
       "title": "Sex worker need no required",
       "description": "need my dick sucked NOW",
       "amountNeeded": 100,
-      "amountRaised": 0,
+      "amountRaised": 100,
       "timePosted": "just now",
-      "supporters": 0,
+      "supporters": 1,
       "verified": false,
       "urgent": false,
       "requestor_id": 9

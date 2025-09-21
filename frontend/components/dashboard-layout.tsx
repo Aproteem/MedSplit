@@ -6,7 +6,21 @@ import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Heart, Menu, ShoppingCart, Gift, DollarSign, User, FileText, Bell, LogOut, Home } from "lucide-react"
+import {
+  Heart,
+  Menu,
+  ShoppingCart,
+  Gift,
+  DollarSign,
+  User,
+  FileText,
+  Bell,
+  LogOut,
+  Home,
+  Moon,
+  Sun,
+} from "lucide-react"
+import { useTheme } from "next-themes"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -30,9 +44,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
   const { user } = useCurrentUser()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [displayName, setDisplayName] = useState<string>("")
   const [roleLabel, setRoleLabel] = useState<string>("")
   const [unreadCount, setUnreadCount] = useState<number>(0)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const initials = useMemo(() => {
     const source = displayName || user?.email || ""
@@ -85,7 +105,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   useEffect(() => {
     const handler = (e: Event) => {
       const ce = e as CustomEvent<{ delta?: number }>
-      if (ce?.detail && typeof ce.detail.delta === 'number') {
+      if (ce?.detail && typeof ce.detail.delta === "number") {
         setUnreadCount((prev) => Math.max(0, prev + (ce.detail.delta as number)))
       } else {
         void loadProfileAndUnread()
@@ -99,8 +119,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className={cn("flex flex-col h-full", mobile ? "w-full" : "w-64")}>
       {/* Logo */}
       <div className="flex items-center space-x-2 p-6 border-b">
-        <Heart className="h-8 w-8 text-primary" />
-        <span className="text-xl font-bold text-primary">MedSplit</span>
+        <Heart className="h-8 w-8 text-primary animate-pulse-subtle" />
+        <span className="text-xl font-bold gradient-text">MedSplit</span>
       </div>
 
       {/* Navigation */}
@@ -112,8 +132,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                isActive ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                "flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover-lift",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
               onClick={() => mobile && setSidebarOpen(false)}
             >
@@ -126,18 +148,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* User Profile */}
       <div className="p-4 border-t">
-        <div className="flex items-center space-x-3 mb-4">
-          <Avatar>
+        <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl hover:bg-muted transition-colors">
+          <Avatar className="ring-2 ring-primary/20">
             <AvatarImage src="/user-avatar.jpg" />
-            <AvatarFallback>{initials}</AvatarFallback>
+            <AvatarFallback className="bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{displayName || "Your Profile"}</p>
-            <p className="text-xs text-gray-500 truncate">{roleLabel}</p>
+            <p className="text-sm font-medium text-foreground truncate">{displayName || "Your Profile"}</p>
+            <p className="text-xs text-muted-foreground truncate">{roleLabel}</p>
           </div>
         </div>
         <Link href="/auth">
-          <Button variant="ghost" size="sm" className="w-full justify-start">
+          <Button variant="ghost" size="sm" className="w-full justify-start hover-lift">
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
@@ -147,15 +169,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation Bar */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div className="min-h-screen bg-background">
+      <header className="glass border-b sticky top-0 z-50">
         <div className="px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-primary">MedSplit</span>
+              <Heart className="h-8 w-8 text-primary animate-pulse-subtle" />
+              <span className="text-xl font-bold gradient-text">MedSplit</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -167,8 +188,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                      isActive ? "bg-primary text-primary-foreground" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900",
+                      "flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover-lift",
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
                     <item.icon className="h-4 w-4" />
@@ -178,26 +201,41 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               })}
             </nav>
 
-            {/* Right side - User info and notifications */}
+            {/* Right side - User info, notifications, and theme toggle */}
             <div className="flex items-center space-x-4">
+              {/* Theme Toggle */}
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="hover-lift"
+                >
+                  {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </Button>
+              )}
+
               {/* User Profile */}
-              <Link href="/profile" className="hidden md:flex items-center space-x-3 hover:bg-gray-100 rounded-lg p-2 transition-colors">
-                <Avatar>
+              <Link
+                href="/profile"
+                className="hidden md:flex items-center space-x-3 hover:bg-muted rounded-xl p-2 transition-all duration-200 hover-lift"
+              >
+                <Avatar className="ring-2 ring-primary/20">
                   <AvatarImage src="/user-avatar.jpg" />
-                  <AvatarFallback>{initials}</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{displayName || "Your Profile"}</p>
-                  <p className="text-xs text-gray-500 truncate">{roleLabel}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{displayName || "Your Profile"}</p>
+                  <p className="text-xs text-muted-foreground truncate">{roleLabel}</p>
                 </div>
               </Link>
 
               {/* Notifications */}
               <Link href="/notifications">
-                <Button variant="ghost" size="sm" className="relative">
+                <Button variant="ghost" size="sm" className="relative hover-lift">
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center animate-pulse-subtle">
                       {unreadCount}
                     </span>
                   )}
@@ -207,7 +245,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Mobile Menu */}
               <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="lg:hidden">
+                  <Button variant="ghost" size="sm" className="lg:hidden hover-lift">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
@@ -220,8 +258,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
       </header>
 
-      {/* Page Content */}
-      <main className="p-4 sm:p-6 lg:p-8">{children}</main>
+      <main className="p-4 sm:p-6 lg:p-8 animate-fade-in-up">{children}</main>
     </div>
   )
 }
