@@ -35,6 +35,7 @@ export default function ProfilePage() {
     medicalConditions: "",
     allergies: "",
     bio: "",
+    avatarUrl: "",
   });
   const [counters, setCounters] = useState({
     medicine_purchases: 0,
@@ -72,6 +73,7 @@ export default function ProfilePage() {
                 ? p.allergies.join(", ")
                 : p.allergies || "",
               bio: p.bio || "",
+              avatarUrl: p.avatar_url || "",
             });
           }
         }
@@ -114,6 +116,7 @@ export default function ProfilePage() {
       emergency_contact: profileData.emergencyContact,
       date_of_birth: profileData.dateOfBirth,
       bio: profileData.bio,
+      avatar_url: profileData.avatarUrl || undefined,
       medical_conditions: profileData.medicalConditions
         ? profileData.medicalConditions
             .split(",")
@@ -147,6 +150,7 @@ export default function ProfilePage() {
       }
       setIsEditing(false);
       alert("Profile updated successfully!");
+      try { window.dispatchEvent(new CustomEvent("medsplit:profile-updated")) } catch {}
     } catch (_) {
       alert("Failed to save profile");
     }
@@ -225,7 +229,7 @@ export default function ProfilePage() {
               <CardContent className="p-6 text-center">
                 <div className="relative inline-block mb-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="/user-avatar.jpg" />
+                  <AvatarImage src={profileData.avatarUrl || "/user-avatar.jpg"} />
                     <AvatarFallback className="text-2xl">
                       {(profileData.name || " ")
                         .trim()
@@ -233,14 +237,54 @@ export default function ProfilePage() {
                         .toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  {isEditing && (
+                {isEditing && (
+                  <>
+                    <input
+                      id="avatar-input"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file || !user?.id) return
+                        try {
+                          const fd = new FormData()
+                          fd.append("file", file)
+                          fd.append("userId", String(user.id))
+                          const res = await fetch(`/api/upload-avatar`, { method: 'POST', body: fd })
+                          if (!res.ok) throw new Error('Upload failed')
+                          const data = await res.json()
+                          const url = data?.url as string
+                          if (url) {
+                            setProfileData((prev) => ({ ...prev, avatarUrl: url }))
+                            // Persist avatar url to profile immediately
+                            try {
+                              if (profileId) {
+                                await fetch(api(`/api/profiles/${profileId}`), {
+                                  method: 'PATCH',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ avatar_url: url }),
+                                })
+                              }
+                            } catch {}
+                            try { window.dispatchEvent(new CustomEvent("medsplit:profile-updated")) } catch {}
+                          }
+                        } catch (err: any) {
+                          alert(err?.message || 'Failed to upload')
+                        } finally {
+                          try { (e.target as HTMLInputElement).value = '' } catch {}
+                        }
+                      }}
+                    />
                     <Button
                       size="sm"
                       className="absolute -bottom-2 -right-2 rounded-full h-8 w-8 p-0"
+                      onClick={() => document.getElementById('avatar-input')?.click()}
                     >
                       <Camera className="h-4 w-4" />
                     </Button>
-                  )}
+                  </>
+                )}
                 </div>
 
                 <h2 className="text-xl font-semibold text-gray-900 mb-1">

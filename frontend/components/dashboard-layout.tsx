@@ -49,6 +49,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [displayName, setDisplayName] = useState<string>("")
   const [roleLabel, setRoleLabel] = useState<string>("")
   const [unreadCount, setUnreadCount] = useState<number>(0)
+  const [avatarUrl, setAvatarUrl] = useState<string>("")
 
   useEffect(() => {
     setMounted(true)
@@ -77,11 +78,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         if (p) {
           const name = [p.first_name, p.last_name].filter(Boolean).join(" ").trim()
           setDisplayName(name || (user.email ? String(user.email).split("@")[0] : ""))
+          setAvatarUrl(p.avatar_url || "")
         } else {
           setDisplayName(user.email ? String(user.email).split("@")[0] : "")
+          setAvatarUrl("")
         }
       } else {
         setDisplayName(user.email ? String(user.email).split("@")[0] : "")
+        setAvatarUrl("")
       }
       // Unread notifications count
       const nRes = await fetch(api(`/api/notifications?user_id=${user.id}`))
@@ -112,6 +116,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       }
     }
     window.addEventListener("medsplit:notifications-updated", handler as EventListener)
+    window.addEventListener("medsplit:profile-updated", handler as EventListener)
     return () => window.removeEventListener("medsplit:notifications-updated", handler as EventListener)
   }, [])
 
@@ -150,7 +155,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="p-4 border-t">
         <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl hover:bg-muted transition-colors">
           <Avatar className="ring-2 ring-primary/20">
-            <AvatarImage src="/user-avatar.jpg" />
+            <AvatarImage src={avatarUrl || "/user-avatar.jpg"} />
             <AvatarFallback className="bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
@@ -171,16 +176,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       <header className="glass border-b sticky top-0 z-50">
-        <div className="px-4 py-3 sm:px-6 lg:px-8">
+        <div className="px-4 py-5 sm:px-8 lg:px-10">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-primary animate-pulse-subtle" />
-              <span className="text-xl font-bold gradient-text">MedSplit</span>
+            <div className="flex items-center space-x-3">
+              <Heart className="h-9 w-9 text-primary animate-pulse-subtle" />
+              <span className="text-2xl font-bold gradient-text">MedSplit</span>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            <nav className="hidden lg:flex items-center space-x-2">
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 return (
@@ -188,13 +193,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover-lift",
+                      "flex items-center space-x-3 px-5 py-3 rounded-xl text-base font-medium transition-all duration-200 hover-lift",
                       isActive
                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-5 w-5" />
                     <span>{item.name}</span>
                   </Link>
                 )
@@ -218,21 +223,21 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* User Profile */}
               <Link
                 href="/profile"
-                className="hidden md:flex items-center space-x-3 hover:bg-muted rounded-xl p-2 transition-all duration-200 hover-lift"
+                className="hidden md:flex items-center space-x-4 hover:bg-muted rounded-xl p-3 transition-all duration-200 hover-lift"
               >
-                <Avatar className="ring-2 ring-primary/20">
-                  <AvatarImage src="/user-avatar.jpg" />
+                <Avatar className="ring-2 ring-primary/20 h-10 w-10">
+                  <AvatarImage src={avatarUrl || "/user-avatar.jpg"} />
                   <AvatarFallback className="bg-primary/10 text-primary font-semibold">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{displayName || "Your Profile"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{roleLabel}</p>
+                  <p className="text-base font-medium text-foreground truncate">{displayName || "Your Profile"}</p>
+                  <p className="text-sm text-muted-foreground truncate">{roleLabel}</p>
                 </div>
               </Link>
 
               {/* Notifications */}
               <Link href="/notifications">
-                <Button variant="ghost" size="sm" className="relative hover-lift">
+                <Button variant="ghost" size="lg" className="relative hover-lift">
                   <Bell className="h-5 w-5" />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center animate-pulse-subtle">
@@ -245,7 +250,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Mobile Menu */}
               <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="lg:hidden hover-lift">
+                  <Button variant="ghost" size="lg" className="lg:hidden hover-lift">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>

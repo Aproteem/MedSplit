@@ -161,7 +161,7 @@ export default function BuyMedsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6" style={{ ['--tile-accent' as any]: '#05668d' }}>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Buy Medicines</h1>
           <p className="text-gray-600">
@@ -169,44 +169,38 @@ export default function BuyMedsPage() {
           </p>
         </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex space-x-4">
-              <div className="flex-1">
-                <Input
-                  placeholder="Search for medicines (e.g., Metformin, Lisinopril)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSearch();
-                  }}
-                  className="text-lg"
-                />
-              </div>
-              <Button
-                onClick={() => handleSearch()}
-                size="lg"
-                disabled={loading}
-              >
-                <Search className="h-5 w-5 mr-2" />
-                {loading ? "Searching..." : "Search"}
-              </Button>
-              {searchActive && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSearchActive(false);
-                    setResults([]);
-                    setError(null);
-                  }}
-                >
-                  Clear
-                </Button>
-              )}
+        <div className="p-2">
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <Input
+                placeholder="Search for medicines (e.g., Metformin, Lisinopril)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                }}
+                className="text-lg bg-white shadow-lg ring-1 ring-primary/20 focus:shadow-xl focus:ring-2 focus:ring-primary/40 rounded-xl"
+              />
             </div>
-            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
-          </CardContent>
-        </Card>
+            <Button onClick={() => handleSearch()} size="lg" disabled={loading}>
+              <Search className="h-5 w-5 mr-2" />
+              {loading ? "Searching..." : "Search"}
+            </Button>
+            {searchActive && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchActive(false);
+                  setResults([]);
+                  setError(null);
+                }}
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+          {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+        </div>
 
         {!searchActive && (
           <Card>
@@ -256,6 +250,7 @@ export default function BuyMedsPage() {
               <p className="text-gray-600">{results.length} medicines found</p>
             </div>
 
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {results.map((med) => {
               const demandProgress = getDemandProgress(
                 med.current_demand,
@@ -263,79 +258,49 @@ export default function BuyMedsPage() {
               );
               const isInWishlist = wishlistMedIds.has(med.id);
               return (
-                <Card key={med.id} className="overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                      <div className="lg:col-span-2 space-y-4">
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900">
-                            {med.name}
-                          </h3>
-                          <p className="text-gray-600">{med.generic_name}</p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            {med.description || ""}
-                          </p>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center text-sm gap-3">
-                            <span className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              <span>Community Demand</span>
-                            </span>{" "}
-                            <div className="px-14">
-                              <span className="font-medium">
-                                {Number(med.current_demand)}/
-                                {Number(med.required_demand)} people
-                              </span>{" "}
-                            </div>
-                          </div>
-                          <AnimatedProgress
-                            value={demandProgress}
-                            height={22}
-                            rounded="rounded-md"
-                            className="mt-1 max-w-3xl"
-                          />
-                          <p className="text-xs text-gray-500">
-                            {Math.max(
-                              0,
-                              Number(med.required_demand) -
-                                Number(med.current_demand)
-                            )}{" "}
-                            more people needed for bulk order
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Button
-                          onClick={() => toggleWishlist(med.id)}
-                          variant={isInWishlist ? "default" : "outline"}
-                          className="w-full"
-                        >
-                          {isInWishlist ? (
-                            <>
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              In Wishlist
-                            </>
-                          ) : (
-                            <>
-                              <Heart className="h-4 w-4 mr-2" />
-                              Add to Wishlist
-                            </>
-                          )}
-                        </Button>
-                        {isInWishlist && (
-                          <p className="text-xs text-center text-gray-500">
-                            Waiting for doctor approval
-                          </p>
-                        )}
-                      </div>
+                <Card key={med.id} className="overflow-hidden tile-accent rounded-xl transition-all hover:-translate-y-1 hover:shadow-lg">
+                  <CardContent className="p-5 space-y-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">{med.name}</h3>
+                      <p className="text-gray-600">{med.generic_name}</p>
+                      {med.description && (
+                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{med.description}</p>
+                      )}
                     </div>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          <span>Community Demand</span>
+                        </span>
+                        <span className="font-medium">
+                          {Number(med.current_demand)}/{Number(med.required_demand)} people
+                        </span>
+                      </div>
+                      <AnimatedProgress value={demandProgress} height={16} rounded="rounded" />
+                    </div>
+                    <Button
+                      onClick={() => toggleWishlist(med.id)}
+                      variant={isInWishlist ? "destructive" : "default"}
+                      className="w-full"
+                    >
+                      {isInWishlist ? (
+                        <>
+                          <Heart className="h-4 w-4 mr-2" />
+                          Cancel Request
+                        </>
+                      ) : (
+                        <>
+                          <Heart className="h-4 w-4 mr-2" />
+                          Add to Wishlist
+                        </>
+                      )}
+                    </Button>
                   </CardContent>
                 </Card>
               );
             })}
+            </div>
           </div>
         )}
 

@@ -4,97 +4,121 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color palette to professional emerald-based theme */
-  --background: oklch(0.99 0.01 120); /* Clean white background */
-  --foreground: oklch(0.28 0.02 200); /* Professional dark text */
+  /* Project palette
+     Primary/Tertiary from image: #05668D, #028090, #00A896, #02C39A, #F0F3BD
+     Secondary uses a complementary coral to teal: #FF6B6B
+  */
+  --background: #ffffff;
+  --foreground: #1f2937; /* slate-800 */
 
-  --card: oklch(1 0 0); /* Pure white cards */
-  --card-foreground: oklch(0.28 0.02 200);
+  --card: #ffffff;
+  --card-foreground: #1f2937;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.28 0.02 200);
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
 
-  --primary: oklch(0.42 0.14 158); /* Professional emerald primary */
-  --primary-foreground: oklch(0.99 0.01 120);
+  /* Primary (teal/green from palette) */
+  --primary: #02C39A;
+  --primary-foreground: #ffffff;
 
-  --secondary: oklch(0.96 0.01 120); /* Soft neutral secondary */
-  --secondary-foreground: oklch(0.28 0.02 200);
+  /* Secondary (complementary coral) */
+  --secondary: #FF6B6B;
+  --secondary-foreground: #ffffff;
 
-  --muted: oklch(0.97 0.01 120); /* Light muted background */
-  --muted-foreground: oklch(0.45 0.02 200);
+  /* Tertiary mapped to accent; deep teal from palette */
+  --accent: #05668D;
+  --accent-foreground: #ffffff;
 
-  --accent: oklch(0.52 0.14 158); /* Vibrant emerald accent */
-  --accent-foreground: oklch(0.99 0.01 120);
+  /* Optional explicit tertiary token for future use */
+  --tertiary: #00A896;
+  --tertiary-foreground: #ffffff;
 
-  --destructive: oklch(0.55 0.18 25); /* Professional red for destructive actions */
-  --destructive-foreground: oklch(0.99 0.01 120);
+  /* Additional contrasting but complementary accents */
+  --accent-2: #6C63FF; /* vivid indigo for contrast */
+  --accent-3: #F0F3BD; /* soft sunshine from palette */
+  --info: #3B82F6; /* blue-500 */
+  --success: #10B981; /* emerald-500 */
+  --warning: #F59E0B; /* amber-500 */
 
-  --border: oklch(0.9 0.01 120); /* Subtle borders */
-  --input: oklch(1 0 0); /* Clean input backgrounds */
-  --ring: oklch(0.42 0.14 158); /* Focus ring matches primary */
+  --muted: #f8fafc; /* subtle background */
+  --muted-foreground: #475569; /* slate-600 */
 
-  --chart-1: oklch(0.42 0.14 158);
-  --chart-2: oklch(0.52 0.14 158);
-  --chart-3: oklch(0.45 0.02 200);
-  --chart-4: oklch(0.96 0.01 120);
-  --chart-5: oklch(0.55 0.18 25);
+  --destructive: #ef4444; /* red-500 */
+  --destructive-foreground: #ffffff;
 
-  --radius: 0.75rem; /* Increased border radius for modern look */
+  --border: #e5e7eb;
+  --input: #ffffff;
+  --ring: var(--primary);
 
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.28 0.02 200);
-  --sidebar-primary: oklch(0.96 0.01 120);
-  --sidebar-primary-foreground: oklch(0.28 0.02 200);
-  --sidebar-accent: oklch(0.52 0.14 158);
-  --sidebar-accent-foreground: oklch(0.99 0.01 120);
-  --sidebar-border: oklch(0.9 0.01 120);
-  --sidebar-ring: oklch(0.42 0.14 158);
+  /* Charts follow brand */
+  --chart-1: #02C39A;
+  --chart-2: #FF6B6B;
+  --chart-3: #6C63FF;
+  --chart-4: #028090;
+  --chart-5: #F59E0B;
+
+  --radius: 0.75rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1f2937;
+  --sidebar-primary: #F0F3BD; /* light from palette for sidebar elements */
+  --sidebar-primary-foreground: #1f2937;
+  --sidebar-accent: #05668D;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: var(--primary);
 }
 
 /* Enhanced dark mode with professional color scheme */
 .dark {
-  --background: oklch(0.08 0.01 200); /* Deep dark background */
-  --foreground: oklch(0.95 0.01 120); /* Light text */
+  --background: #0b1220; /* deep slate */
+  --foreground: #f8fafc;
 
-  --card: oklch(0.12 0.02 200); /* Dark cards with subtle tint */
-  --card-foreground: oklch(0.95 0.01 120);
+  --card: #111827;
+  --card-foreground: #f8fafc;
 
-  --popover: oklch(0.12 0.02 200);
-  --popover-foreground: oklch(0.95 0.01 120);
+  --popover: #111827;
+  --popover-foreground: #f8fafc;
 
-  --primary: oklch(0.55 0.16 158); /* Brighter emerald for dark mode */
-  --primary-foreground: oklch(0.08 0.01 200);
+  --primary: #02C39A;
+  --primary-foreground: #0b1220;
 
-  --secondary: oklch(0.15 0.02 200); /* Dark secondary */
-  --secondary-foreground: oklch(0.95 0.01 120);
+  --secondary: #FF6B6B;
+  --secondary-foreground: #0b1220;
 
-  --muted: oklch(0.15 0.02 200);
-  --muted-foreground: oklch(0.65 0.02 200);
+  --muted: #0f172a;
+  --muted-foreground: #94a3b8;
 
-  --accent: oklch(0.65 0.16 158); /* Vibrant accent for dark mode */
-  --accent-foreground: oklch(0.08 0.01 200);
+  --accent: #00A896; /* brighter tertiary for dark */
+  --accent-foreground: #0b1220;
 
-  --destructive: oklch(0.65 0.2 25);
-  --destructive-foreground: oklch(0.95 0.01 120);
+  --accent-2: #8B80FF; /* lighter indigo for dark */
+  --accent-3: #E4E8A8; /* dimmed sunshine */
+  --info: #60A5FA;
+  --success: #34D399;
+  --warning: #FBBF24;
 
-  --border: oklch(0.2 0.02 200);
-  --input: oklch(0.12 0.02 200);
-  --ring: oklch(0.55 0.16 158);
+  --destructive: #f87171;
+  --destructive-foreground: #0b1220;
 
-  --chart-1: oklch(0.55 0.16 158);
-  --chart-2: oklch(0.65 0.16 158);
-  --chart-3: oklch(0.65 0.02 200);
-  --chart-4: oklch(0.15 0.02 200);
-  --chart-5: oklch(0.65 0.2 25);
+  --border: #1f2937;
+  --input: #0b1220;
+  --ring: var(--primary);
 
-  --sidebar: oklch(0.08 0.01 200);
-  --sidebar-foreground: oklch(0.95 0.01 120);
-  --sidebar-primary: oklch(0.15 0.02 200);
-  --sidebar-primary-foreground: oklch(0.95 0.01 120);
-  --sidebar-accent: oklch(0.65 0.16 158);
-  --sidebar-accent-foreground: oklch(0.08 0.01 200);
-  --sidebar-border: oklch(0.2 0.02 200);
-  --sidebar-ring: oklch(0.55 0.16 158);
+  --chart-1: #02C39A;
+  --chart-2: #FF6B6B;
+  --chart-3: #8B80FF;
+  --chart-4: #028090;
+  --chart-5: #FBBF24;
+
+  --sidebar: #0b1220;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #0f172a;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #00A896;
+  --sidebar-accent-foreground: #0b1220;
+  --sidebar-border: #1f2937;
+  --sidebar-ring: var(--primary);
 }
 
 @theme inline {
@@ -267,4 +291,11 @@
 
 .gradient-text-hero {
   @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+}
+
+/* Page-scoped tile accent helper using CSS color-mix for subtle shading */
+.tile-accent {
+  border-width: 1px;
+  border-color: color-mix(in srgb, var(--tile-accent, var(--primary)) 15%, transparent);
+  background-color: color-mix(in srgb, var(--tile-accent, var(--primary)) 6%, transparent);
 }

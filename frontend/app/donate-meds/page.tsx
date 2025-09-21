@@ -195,7 +195,7 @@ export default function DonateMedsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6" style={{ ['--tile-accent' as any]: '#00A896' }}>
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -210,46 +210,44 @@ export default function DonateMedsPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="find">Find Donations</TabsTrigger>
-            <TabsTrigger value="my-donations">My Donations</TabsTrigger>
+            <TabsTrigger value="find" className="text-base h-11 py-0 rounded-lg font-medium border-2 border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">Find Donations</TabsTrigger>
+            <TabsTrigger value="my-donations" className="text-base h-11 py-0 rounded-lg font-medium border-2 border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">My Donations</TabsTrigger>
           </TabsList>
 
           <TabsContent value="find" className="space-y-6">
             {/* Search Bar */}
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex space-x-4">
-                  <div className="flex-1">
-                    <Input
-                      placeholder="Search for donated medicines in your area..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") void handleSearch()
-                      }}
-                      className="text-lg"
-                    />
-                  </div>
-                  <Button onClick={() => handleSearch()} size="lg" disabled={loading}>
-                    <Search className="h-5 w-5 mr-2" />
-                    {loading ? "Searching..." : "Search"}
-                  </Button>
-                  {searchActive && (
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSearchActive(false)
-                        setResults([])
-                        setError(null)
-                      }}
-                    >
-                      Clear
-                    </Button>
-                  )}
+            <div className="p-2">
+              <div className="flex space-x-4">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Search for donated medicines in your area..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") void handleSearch()
+                    }}
+                    className="text-lg bg-white shadow-lg ring-1 ring-primary/20 focus:shadow-xl focus:ring-2 focus:ring-primary/40 rounded-xl"
+                  />
                 </div>
-                {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
-              </CardContent>
-            </Card>
+                <Button onClick={() => handleSearch()} size="lg" disabled={loading}>
+                  <Search className="h-5 w-5 mr-2" />
+                  {loading ? "Searching..." : "Search"}
+                </Button>
+                {searchActive && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchActive(false)
+                      setResults([])
+                      setError(null)
+                    }}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+              {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+            </div>
 
             {/* Results or Default List */}
             {!searchActive && (
@@ -258,97 +256,66 @@ export default function DonateMedsPage() {
                   <h2 className="text-xl font-semibold">Available Donations Near You</h2>
                   <p className="text-gray-600">{allDonations.length} donations available</p>
                 </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {allDonations.map((donation) => {
                   const isRequestedByMe = Boolean(user?.id && donation.claimed_by === user.id)
                   const isPending = isRequestedByMe && (!donation.claim_status || donation.claim_status === 'pending')
                   const isClaimed = Boolean(donation.claimed_by)
                   const med = donation.medicine_name || medicineById.get(donation.medicine_id)?.name || `Medicine #${donation.medicine_id}`
                   return (
-                    <Card key={donation.id} className={"overflow-hidden " + (highlightId === donation.id ? "ring-2 ring-blue-400" : "") }>
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                          <div className="lg:col-span-2 space-y-4">
-                            <div>
-                              <div className="flex items-center space-x-2 mb-2">
-                                <h3 className="text-xl font-semibold text-gray-900">{med}</h3>
-                                {donation.claimed_by && (
-                                  <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">Claimed</span>
-                                )}
-                              </div>
-                              {medicineById.get(donation.medicine_id)?.generic_name && (
-                                <p className="text-gray-600">{medicineById.get(donation.medicine_id)?.generic_name}</p>
-                              )}
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div className="flex items-center space-x-2">
-                                <Gift className="h-4 w-4 text-gray-400" />
-                                <span>Quantity: {donation.quantity}</span>
-                              </div>
-                              {donation.created_at && (
-                                <div className="flex items-center space-x-2">
-                                  <Clock className="h-4 w-4 text-gray-400" />
-                                  <span>{new Date(donation.created_at).toLocaleString()}</span>
-                                </div>
-                              )}
-                              <div className="flex items-center space-x-2">
-                                <Calendar className="h-4 w-4 text-gray-400" />
-                                <span>
-                                  Expires: {donation.medicine_expires_at ? new Date(donation.medicine_expires_at).toLocaleDateString() : "N/A"}
-                                </span>
-                              </div>
-                            </div>
-                            {(donation.condition || donation.doctor_name || donation.notes) && (
-                              <div className="bg-gray-50 p-3 rounded-lg">
-                                <p className="text-sm text-gray-700">
-                                  {donation.condition && (<><strong>Condition:</strong> {donation.condition}</>)}
-                                  {donation.doctor_name && (<><span className="mx-2">•</span><strong>Doctor:</strong> {donation.doctor_name}</>)}
-                                  {donation.notes && (<><span className="mx-2">•</span>{donation.notes}</>)}
-                                </p>
-                              </div>
+                    <Card key={donation.id} className={"overflow-hidden rounded-xl tile-accent transition-all hover:-translate-y-1 hover:shadow-lg " + (highlightId === donation.id ? "ring-2 ring-blue-400" : "") }>
+                      <CardContent className="p-5 space-y-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center flex-wrap gap-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{med}</h3>
+                            {isPending && (
+                              <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Request Sent</span>
+                            )}
+                            {donation.claimed_by && !isPending && (
+                              <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-gray-200 text-gray-800">Claimed</span>
                             )}
                           </div>
-                          <div className="space-y-4">
-                            <div className="bg-blue-50 p-4 rounded-lg text-center">
-                              <Gift className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                              <p className="text-sm font-medium text-blue-800">Free Donation</p>
-                              <p className="text-xs text-blue-600">Community supported</p>
+                          {medicineById.get(donation.medicine_id)?.generic_name && (
+                            <p className="text-gray-600">{medicineById.get(donation.medicine_id)?.generic_name}</p>
+                          )}
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div className="flex items-center space-x-2">
+                              <Gift className="h-4 w-4 text-gray-400" />
+                              <span>Quantity: {donation.quantity}</span>
                             </div>
-                            {isPending ? (
-                              <Button
-                                onClick={() => cancelDonationRequest(donation.id)}
-                                className="w-full"
-                                variant="destructive"
-                              >
-                                Cancel Request
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() => requestDonation(donation.id)}
-                                disabled={isClaimed}
-                                className="w-full"
-                                variant={isClaimed ? "secondary" : "default"}
-                              >
-                                {isRequestedByMe ? (
-                                  <>
-                                    <Heart className="h-4 w-4 mr-2" />
-                                    Request Sent
-                                  </>
-                                ) : isClaimed ? (
-                                  "Already Claimed"
-                                ) : (
-                                  "Request Donation"
-                                )}
-                              </Button>
-                            )}
-                            {isRequestedByMe && (
-                              <p className="text-xs text-center text-gray-500">{isPending ? 'Waiting for approval' : `Status: ${donation.claim_status || 'pending'}`}</p>
-                            )}
+                            {/* Date created removed per request */}
+                            <div className="flex items-center space-x-2">
+                              <Calendar className="h-4 w-4 text-gray-400" />
+                              <span>
+                                Expires: {donation.medicine_expires_at ? new Date(donation.medicine_expires_at).toLocaleDateString() : "N/A"}
+                              </span>
+                            </div>
                           </div>
+                          {(donation.condition || donation.doctor_name || donation.notes) && (
+                            <div className="bg-gray-50 p-3 rounded-lg">
+                              <p className="text-sm text-gray-700">
+                                {donation.condition && (<><strong>Condition:</strong> {donation.condition}</>)}
+                                {donation.doctor_name && (<><span className="mx-2">•</span><strong>Doctor:</strong> {donation.doctor_name}</>)}
+                                {donation.notes && (<><span className="mx-2">•</span>{donation.notes}</>)}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="space-y-3">
+                          {isPending ? (
+                            <Button onClick={() => cancelDonationRequest(donation.id)} className="w-full" variant="destructive">Cancel Request</Button>
+                          ) : (
+                            <Button onClick={() => requestDonation(donation.id)} disabled={isClaimed} className="w-full" variant={isClaimed ? "secondary" : "default"}>
+                              {isRequestedByMe ? (<><Heart className="h-4 w-4 mr-2" />Request Sent</>) : isClaimed ? ("Already Claimed") : ("Request Donation")}
+                            </Button>
+                          )}
+                          {isRequestedByMe && (<p className="text-xs text-center text-gray-500">{isPending ? 'Waiting for approval' : `Status: ${donation.claim_status || 'pending'}`}</p>)}
                         </div>
                       </CardContent>
                     </Card>
                   )
                 })}
+                </div>
               </div>
             )}
 
@@ -358,83 +325,58 @@ export default function DonateMedsPage() {
                   <h2 className="text-xl font-semibold">Search Results</h2>
                   <p className="text-gray-600">{results.length} donations found</p>
                 </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {results.map((donation) => {
                   const med = donation.medicine_name || medicineById.get(donation.medicine_id)?.name
                   const isRequestedByMe = Boolean(user?.id && donation.claimed_by === user.id)
                   const isPending = isRequestedByMe && (!donation.claim_status || donation.claim_status === 'pending')
                   const isClaimed = Boolean(donation.claimed_by)
                   return (
-                    <Card key={donation.id} className="overflow-hidden">
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                          <div className="lg:col-span-2 space-y-4">
-                            <div>
-                              <h3 className="text-xl font-semibold text-gray-900">{med || `Medicine #${donation.medicine_id}`}</h3>
-                              {medicineById.get(donation.medicine_id)?.generic_name && (
-                                <p className="text-gray-600">{medicineById.get(donation.medicine_id)?.generic_name}</p>
-                              )}
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div className="flex items-center space-x-2">
-                                <Gift className="h-4 w-4 text-gray-400" />
-                                <span>Quantity: {donation.quantity}</span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Calendar className="h-4 w-4 text-gray-400" />
-                                <span>
-                                  Expires: {donation.medicine_expires_at ? new Date(donation.medicine_expires_at).toLocaleDateString() : "N/A"}
-                                </span>
-                              </div>
-                              {donation.claim_status && (
-                                <div className="flex items-center space-x-2">
-                                  <CheckCircle className="h-4 w-4 text-gray-400" />
-                                  <span>Status: {donation.claim_status}</span>
-                                </div>
-                              )}
-                            </div>
+                    <Card key={donation.id} className="overflow-hidden rounded-xl tile-accent transition-all hover:-translate-y-1 hover:shadow-lg">
+                      <CardContent className="p-5 space-y-3">
+                        <div className="space-y-2">
+                          <div className="flex items-center flex-wrap gap-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{med || `Medicine #${donation.medicine_id}`}</h3>
+                            {isPending && (<span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Request Sent</span>)}
+                            {donation.claimed_by && !isPending && (<span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-gray-200 text-gray-800">Claimed</span>)}
                           </div>
-                          <div className="space-y-4">
-                            <div className="bg-blue-50 p-4 rounded-lg text-center">
-                              <Gift className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                              <p className="text-sm font-medium text-blue-800">Free Donation</p>
-                              <p className="text-xs text-blue-600">Community supported</p>
+                          {medicineById.get(donation.medicine_id)?.generic_name && (
+                            <p className="text-gray-600">{medicineById.get(donation.medicine_id)?.generic_name}</p>
+                          )}
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div className="flex items-center space-x-2">
+                              <Gift className="h-4 w-4 text-gray-400" />
+                              <span>Quantity: {donation.quantity}</span>
                             </div>
-                            {isPending ? (
-                              <Button
-                                onClick={() => cancelDonationRequest(donation.id)}
-                                className="w-full"
-                                variant="destructive"
-                              >
-                                Cancel Request
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() => requestDonation(donation.id)}
-                                disabled={isClaimed}
-                                className="w-full"
-                                variant={isClaimed ? "secondary" : "default"}
-                              >
-                                {isRequestedByMe ? (
-                                  <>
-                                    <Heart className="h-4 w-4 mr-2" />
-                                    Request Sent
-                                  </>
-                                ) : isClaimed ? (
-                                  "Already Claimed"
-                                ) : (
-                                  "Request Donation"
-                                )}
-                              </Button>
-                            )}
-                            {isRequestedByMe && (
-                              <p className="text-xs text-center text-gray-500">{isPending ? 'Waiting for approval' : `Status: ${donation.claim_status || 'pending'}`}</p>
+                            <div className="flex items-center space-x-2">
+                              <Calendar className="h-4 w-4 text-gray-400" />
+                              <span>
+                                Expires: {donation.medicine_expires_at ? new Date(donation.medicine_expires_at).toLocaleDateString() : "N/A"}
+                              </span>
+                            </div>
+                            {donation.claim_status && (
+                              <div className="flex items-center space-x-2">
+                                <CheckCircle className="h-4 w-4 text-gray-400" />
+                                <span>Status: {donation.claim_status}</span>
+                              </div>
                             )}
                           </div>
+                        </div>
+                        <div className="space-y-3">
+                          {isPending ? (
+                            <Button onClick={() => cancelDonationRequest(donation.id)} className="w-full" variant="destructive">Cancel Request</Button>
+                          ) : (
+                            <Button onClick={() => requestDonation(donation.id)} disabled={isClaimed} className="w-full" variant={isClaimed ? "secondary" : "default"}>
+                              {isRequestedByMe ? (<><Heart className="h-4 w-4 mr-2" />Request Sent</>) : isClaimed ? ("Already Claimed") : ("Request Donation")}
+                            </Button>
+                          )}
+                          {isRequestedByMe && (<p className="text-xs text-center text-gray-500">{isPending ? 'Waiting for approval' : `Status: ${donation.claim_status || 'pending'}`}</p>)}
                         </div>
                       </CardContent>
                     </Card>
                   )
                 })}
+                </div>
               </div>
             )}
 
@@ -500,12 +442,8 @@ export default function DonateMedsPage() {
                                 <Gift className="h-4 w-4 text-gray-400" />
                                 <span>Quantity: {donation.quantity}</span>
                               </div>
-                              {donation.created_at && (
-                                <div className="flex items-center space-x-2">
-                                  <Clock className="h-4 w-4 text-gray-400" />
-                                  <span>{new Date(donation.created_at).toLocaleString()}</span>
-                                </div>
-                              )}
+                              {/* Date created removed per request */}
+                              {/* Date created removed per request */}
                               <div className="flex items-center space-x-2">
                                 <Calendar className="h-4 w-4 text-gray-400" />
                                 <span>

@@ -94,7 +94,7 @@ export default function MicroGrantsPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6" style={{ ['--tile-accent' as any]: '#118C4F' }}>
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -109,8 +109,8 @@ export default function MicroGrantsPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="browse">Browse Grants</TabsTrigger>
-            <TabsTrigger value="my-grants">My Grants</TabsTrigger>
+            <TabsTrigger value="browse" className="text-base h-11 py-0 rounded-lg font-medium border-2 border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">Browse Grants</TabsTrigger>
+            <TabsTrigger value="my-grants" className="text-base h-11 py-0 rounded-lg font-medium border-2 border-transparent data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary">My Grants</TabsTrigger>
           </TabsList>
 
           <TabsContent value="browse" className="space-y-6">
@@ -161,95 +161,38 @@ export default function MicroGrantsPage() {
                 <p className="text-gray-600">{activeGrants.length} active requests</p>
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {sortedGrants.map((grant) => {
                 const remainingAmount = grant.amountNeeded - grant.amountRaised
                 const hasDonated = donatedGrants.includes(grant.id)
 
                 return (
-                  <Card key={grant.id} className="overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Grant Info */}
-                        <div className="lg:col-span-2 space-y-4">
-                          <div>
-                            <div className="flex items-center space-x-2 mb-2">
-                              <h3 className="text-xl font-semibold text-gray-900">{grant.title}</h3>
-                            </div>
-                            <p className="text-gray-600">Requested by {grant.requesterName}</p>
-                          </div>
-
-                          <p className="text-gray-700 leading-relaxed">{grant.description}</p>
-
-                          <div className="flex items-center space-x-6 text-sm text-gray-600">
-                            <div className="flex items-center space-x-1">
-                              <Clock className="h-4 w-4" />
-                              <span>{grant.created_at ? new Date(grant.created_at).toLocaleString() : grant.timePosted}</span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Users className="h-4 w-4" />
-                              <span>{grant.supporters} supporters</span>
-                            </div>
-                          </div>
-
-                          {/* Progress bar removed */}
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center text-sm">
-                              <span className="font-medium">Funding</span>
-                              <span className="text-gray-600">
-                                ${grant.amountRaised} of ${grant.amountNeeded}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              ${remainingAmount} remaining
-                            </p>
-                          </div>
+                  <Card key={grant.id} className="overflow-hidden rounded-xl tile-accent transition-all hover:-translate-y-1 hover:shadow-lg">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{grant.title}</h3>
+                        <p className="text-gray-600">Requested by {grant.requesterName}</p>
+                        <p className="text-gray-700 text-sm line-clamp-3">{grant.description}</p>
+                        <div className="flex items-center justify-between text-sm text-gray-600">
+                          <span className="flex items-center gap-1"><Clock className="h-4 w-4" />{grant.created_at ? new Date(grant.created_at).toLocaleString() : grant.timePosted}</span>
+                          <span className="flex items-center gap-1"><Users className="h-4 w-4" />{grant.supporters} supporters</span>
                         </div>
-
-                        {/* Donation Section */}
-                        <div className="space-y-4">
-                          <div className="bg-blue-50 p-4 rounded-lg text-center">
-                            <DollarSign className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                            <p className="text-lg font-semibold text-blue-800">${remainingAmount}</p>
-                            <p className="text-sm text-blue-600">Still needed</p>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Button
-                              onClick={() => handleDonate(grant.id, Math.max(1, remainingAmount))}
-                              disabled={hasDonated || remainingAmount === 0}
-                              className="w-full"
-                              variant={remainingAmount === 0 ? "secondary" : "default"}
-                            >
-                              {remainingAmount === 0 ? (
-                                "Fully Funded"
-                              ) : hasDonated ? (
-                                "Donation Sent"
-                              ) : (
-                                <>
-                                  <Heart className="h-4 w-4 mr-2" />
-                                  Donate Now
-                                </>
-                              )}
-                            </Button>
-
-                            {remainingAmount === 0 && (
-                              <div className="text-center">
-                                <Badge variant="default" className="bg-green-100 text-green-800">
-                                  Goal Reached!
-                                </Badge>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="text-xs text-gray-500 text-center">
-                            All donations are secure and go directly to medical expenses
-                          </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium">Funding</span>
+                          <span className="text-gray-600">${grant.amountRaised} of ${grant.amountNeeded}</span>
                         </div>
+                        <p className="text-xs text-gray-500">${remainingAmount} remaining</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Button onClick={() => handleDonate(grant.id, Math.max(1, remainingAmount))} disabled={hasDonated || remainingAmount === 0} className="w-full" variant={remainingAmount === 0 ? "secondary" : "default"}>
+                          {remainingAmount === 0 ? ("Fully Funded") : hasDonated ? ("Donation Sent") : (<><Heart className="h-4 w-4 mr-2" />Donate Now</>)}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
                 )
               })}
+              </div>
             </div>
           </TabsContent>
 

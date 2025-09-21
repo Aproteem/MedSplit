@@ -299,7 +299,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">
-                    {checkoutData.title}
+                      {checkoutData.title}
                     </h3>
                     {checkoutData.type === "medicine" ? (
                       <>
