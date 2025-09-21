@@ -69,7 +69,7 @@
       "description": "NSAID pain reliever",
       "created_at": "2025-09-19T09:10:00.000Z",
       "expire_at": "2025-12-31",
-      "current_demand": 18,
+      "current_demand": 19,
       "required_demand": 20
     },
     {
@@ -146,7 +146,7 @@
       "id": 10,
       "name": "Adalimumab (Humira) 40mg",
       "generic_name": "Adalimumab",
-      "description": "Autoimmune disease therapy (RA, Crohn’s, psoriasis)",
+      "description": "Autoimmune disease therapy (RA, Crohn\u00e2\u20ac\u2122s, psoriasis)",
       "created_at": "2025-09-19T10:30:00.000Z",
       "expire_at": "2026-05-05",
       "current_demand": 20,
@@ -393,6 +393,14 @@
       "approved": true,
       "id": 18,
       "created_at": "2025-09-20T22:01:49.880063"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 2,
+      "quantity": 1,
+      "approved": false,
+      "id": 19,
+      "created_at": "2025-09-20T22:16:24.031020"
     }
   ],
   "donations": [
@@ -742,16 +750,26 @@
       "message": "Your claim for donation #3 was approved.",
       "action_url": "/donate-meds?highlight=3",
       "id": 42,
-      "created_at": "2025-09-20T21:54:33.844006"
+      "created_at": "2025-09-20T21:54:33.844006",
+      "read": true
     },
     {
       "user_id": 9,
       "type": "wishlist",
       "title": "Added to Wishlist",
       "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
-      "read": false,
+      "read": true,
       "id": 43,
       "created_at": "2025-09-20T22:01:49.905747"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Ibuprofen 200mg was added to wishlist.",
+      "read": true,
+      "id": 45,
+      "created_at": "2025-09-20T22:16:24.070522"
     }
   ],
   "transactions": [],
@@ -760,13 +778,13 @@
     "counters": {
       "users": 9,
       "medicines": 30,
-      "wishlists": 18,
+      "wishlists": 19,
       "donations": 16,
       "grants": 1,
       "profiles": 9,
       "counters": 2,
       "demoData": 0,
-      "notifications": 44,
+      "notifications": 45,
       "transactions": 0
     }
   },

@@ -35,7 +35,13 @@ export default function NotificationsPage() {
       const res = await fetch(api(`/api/notifications?user_id=${user.id}`));
       if (!res.ok) throw new Error("Failed to load notifications");
       const list = await res.json();
-      setItems(Array.isArray(list) ? list : []);
+      const normalized = Array.isArray(list) ? list : [];
+      const sorted = [...normalized].sort((a: Notification, b: Notification) => {
+        const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return bTime - aTime || b.id - a.id;
+      });
+      setItems(sorted);
     } catch (e: any) {
       setError(e?.message || "Failed to load notifications");
       setItems([]);
@@ -64,6 +70,27 @@ export default function NotificationsPage() {
       { method: "POST" }
     );
     await load();
+  };
+
+  const markOneRead = async (notif: Notification) => {
+    if (notif.read) return;
+    // Optimistic update
+    setItems((prev) => prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n)));
+    try {
+      await fetch(api(`/api/notifications/${notif.id}`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read: true }),
+      });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("medsplit:notifications-updated", { detail: { delta: -1 } })
+        );
+      }
+    } catch {
+      // Rollback on failure
+      setItems((prev) => prev.map((n) => (n.id === notif.id ? { ...n, read: false } : n)));
+    }
   };
 
   return (
@@ -104,6 +131,7 @@ export default function NotificationsPage() {
                 "transition-colors",
                 !n.read && "bg-blue-50 border-blue-200"
               )}
+              onClick={() => void markOneRead(n)}
             >
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
