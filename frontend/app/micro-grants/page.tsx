@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DollarSign, Heart, Clock, FileText, Plus, Users } from "lucide-react"
 import { DashboardLayout } from "@/components/dashboard-layout"
@@ -23,6 +22,7 @@ type Grant = {
   verified: boolean
   urgent: boolean
   requestor_id?: number | null
+  created_at?: string
 }
 
 const myGrants = [
@@ -44,6 +44,7 @@ export default function MicroGrantsPage() {
   const [grants, setGrants] = useState<Grant[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const { user } = useCurrentUser()
+  const [activeTab, setActiveTab] = useState<string>("browse")
 
   useEffect(() => {
     const loadGrants = async () => {
@@ -62,19 +63,34 @@ export default function MicroGrantsPage() {
 
   const myGrantsForUser = useMemo(() => {
     if (!user) return [] as Grant[]
-    return grants.filter((g) => Number(g.requestor_id) === Number(user.id))
+    const mine = grants.filter((g) => Number(g.requestor_id) === Number(user.id))
+    return [...mine].sort((a, b) => {
+      const at = a?.created_at ? new Date(a.created_at).getTime() : 0
+      const bt = b?.created_at ? new Date(b.created_at).getTime() : 0
+      return bt - at || (Number(b.id || 0) - Number(a.id || 0))
+    })
   }, [grants, user])
 
-  const handleDonate = (grantId: number) => {
+  const sortedGrants = useMemo(() => {
+    return [...grants].sort((a, b) => {
+      const at = a?.created_at ? new Date(a.created_at).getTime() : 0
+      const bt = b?.created_at ? new Date(b.created_at).getTime() : 0
+      return bt - at || (Number(b.id || 0) - Number(a.id || 0))
+    })
+  }, [grants])
+
+  const activeGrants = useMemo(() => {
+    return sortedGrants.filter((g) => Number(g.amountRaised || 0) < Number(g.amountNeeded || 0))
+  }, [sortedGrants])
+
+  const handleDonate = (grantId: number, amount: number) => {
     // In a real app, this would open a payment modal
     setDonatedGrants((prev) => [...prev, grantId])
     // Redirect to checkout page
-    window.location.href = `/checkout/grant-${grantId}`
+    window.location.href = `/checkout/grant-${grantId}?amount=${encodeURIComponent(Math.max(1, Math.round(amount)))}`
   }
 
-  const getProgressPercentage = (raised: number, needed: number) => {
-    return (raised / needed) * 100
-  }
+  // Progress bar removed per request
 
   return (
     <DashboardLayout>
@@ -91,7 +107,7 @@ export default function MicroGrantsPage() {
           </Button>
         </div>
 
-        <Tabs defaultValue="browse" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="browse">Browse Grants</TabsTrigger>
             <TabsTrigger value="my-grants">My Grants</TabsTrigger>
@@ -106,7 +122,7 @@ export default function MicroGrantsPage() {
                   <FileText className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{grants.length}</div>
+                  <div className="text-2xl font-bold">{activeGrants.length}</div>
                   <p className="text-xs text-muted-foreground">Seeking support</p>
                 </CardContent>
               </Card>
@@ -118,7 +134,7 @@ export default function MicroGrantsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${grants.reduce((sum, grant) => sum + grant.amountRaised, 0)}
+                    ${sortedGrants.reduce((sum, grant) => sum + grant.amountRaised, 0)}
                   </div>
                   <p className="text-xs text-muted-foreground">Community support</p>
                 </CardContent>
@@ -131,7 +147,7 @@ export default function MicroGrantsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {grants.reduce((sum, grant) => sum + grant.supporters, 0)}
+                    {sortedGrants.reduce((sum, grant) => sum + grant.supporters, 0)}
                   </div>
                   <p className="text-xs text-muted-foreground">Supporters</p>
                 </CardContent>
@@ -142,11 +158,10 @@ export default function MicroGrantsPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Current Grant Requests</h2>
-                <p className="text-gray-600">{grants.length} active requests</p>
+                <p className="text-gray-600">{activeGrants.length} active requests</p>
               </div>
 
-              {grants.map((grant) => {
-                const progressPercentage = getProgressPercentage(grant.amountRaised, grant.amountNeeded)
+              {sortedGrants.map((grant) => {
                 const remainingAmount = grant.amountNeeded - grant.amountRaised
                 const hasDonated = donatedGrants.includes(grant.id)
 
@@ -168,7 +183,7 @@ export default function MicroGrantsPage() {
                           <div className="flex items-center space-x-6 text-sm text-gray-600">
                             <div className="flex items-center space-x-1">
                               <Clock className="h-4 w-4" />
-                              <span>{grant.timePosted}</span>
+                              <span>{grant.created_at ? new Date(grant.created_at).toLocaleString() : grant.timePosted}</span>
                             </div>
                             <div className="flex items-center space-x-1">
                               <Users className="h-4 w-4" />
@@ -176,17 +191,16 @@ export default function MicroGrantsPage() {
                             </div>
                           </div>
 
-                          {/* Progress */}
+                          {/* Progress bar removed */}
                           <div className="space-y-2">
                             <div className="flex justify-between items-center text-sm">
-                              <span className="font-medium">Funding Progress</span>
+                              <span className="font-medium">Funding</span>
                               <span className="text-gray-600">
                                 ${grant.amountRaised} of ${grant.amountNeeded}
                               </span>
                             </div>
-                            <Progress value={progressPercentage} className="h-2" />
                             <p className="text-xs text-gray-500">
-                              ${remainingAmount} remaining • {Math.round(progressPercentage)}% funded
+                              ${remainingAmount} remaining
                             </p>
                           </div>
                         </div>
@@ -201,7 +215,7 @@ export default function MicroGrantsPage() {
 
                           <div className="space-y-2">
                             <Button
-                              onClick={() => handleDonate(grant.id)}
+                              onClick={() => handleDonate(grant.id, Math.max(1, remainingAmount))}
                               disabled={hasDonated || remainingAmount === 0}
                               className="w-full"
                               variant={remainingAmount === 0 ? "secondary" : "default"}
@@ -296,6 +310,7 @@ export default function MicroGrantsPage() {
             onClose={() => setShowGrantForm(false)}
             onSubmitted={(newGrant: any) => {
               setGrants((prev) => [newGrant, ...prev])
+              setActiveTab("my-grants")
             }}
           />
         )}

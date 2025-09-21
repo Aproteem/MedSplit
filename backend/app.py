@@ -721,11 +721,18 @@ def claim_donation(item_id):
     donation['claim_status'] = 'pending'
     save_db(db)
     # Notify donor (if any) and claimer
+    try:
+        med_name = donation.get('medicine_name')
+        if not med_name:
+            med = _find_by_id(db.get('medicines', []), donation.get('medicine_id'))
+            med_name = (med or {}).get('name') or f"donation #{item_id}"
+    except Exception:
+        med_name = f"donation #{item_id}"
     _create_item('notifications', {
         'user_id': user_id,
         'type': 'donation',
-        'title': 'Donation Claimed',
-        'message': f"You claimed donation #{item_id}.",
+        'title': 'Request Submitted',
+        'message': f"You requested {med_name}.",
     })
     return jsonify({'message': 'Donation claimed'})
 
@@ -740,11 +747,16 @@ def approve_wishlist(item_id):
     item['approved'] = True
     save_db(db)
     # Notify user
+    try:
+        med = _find_by_id(db.get('medicines', []), item.get('medicine_id'))
+        med_name = (med or {}).get('name') or f"medicine #{item.get('medicine_id')}"
+    except Exception:
+        med_name = f"medicine #{item.get('medicine_id')}"
     _create_item('notifications', {
         'user_id': item.get('user_id'),
         'type': 'approval',
         'title': 'Request Approved',
-        'message': 'Your medicine request has been approved.',
+        'message': f"Your request for {med_name} has been approved.",
         # Provide an action link to checkout the medicine
         'action_url': f"/checkout/{item.get('medicine_id')}",
     })
@@ -759,11 +771,16 @@ def reject_wishlist(item_id):
     item['approved'] = False
     item['rejected_at'] = datetime.now().isoformat()
     save_db(db)
+    try:
+        med = _find_by_id(db.get('medicines', []), item.get('medicine_id'))
+        med_name = (med or {}).get('name') or f"medicine #{item.get('medicine_id')}"
+    except Exception:
+        med_name = f"medicine #{item.get('medicine_id')}"
     _create_item('notifications', {
         'user_id': item.get('user_id'),
         'type': 'approval',
         'title': 'Request Rejected',
-        'message': 'Your medicine request was not approved at this time.',
+        'message': f"Your request for {med_name} was not approved at this time.",
     })
     return jsonify(item)
 
@@ -778,11 +795,19 @@ def approve_donation_claim(item_id):
     donation['claim_status'] = 'approved'
     donation['claim_decided_at'] = datetime.now().isoformat()
     save_db(db)
+    try:
+        med_name = donation.get('medicine_name')
+        if not med_name:
+            db = load_db()
+            med = _find_by_id(db.get('medicines', []), donation.get('medicine_id'))
+            med_name = (med or {}).get('name') or f"donation #{item_id}"
+    except Exception:
+        med_name = f"donation #{item_id}"
     _create_item('notifications', {
         'user_id': donation.get('claimed_by'),
         'type': 'donation',
-        'title': 'Donation Approved',
-        'message': f"Your claim for donation #{item_id} was approved.",
+        'title': 'Request Approved',
+        'message': f"Your request for {med_name} was approved.",
         'action_url': f"/donate-meds?highlight={item_id}",
     })
     return jsonify(donation)
@@ -799,13 +824,58 @@ def reject_donation_claim(item_id):
     donation['claim_status'] = 'rejected'
     donation['claim_decided_at'] = datetime.now().isoformat()
     save_db(db)
+    try:
+        med_name = donation.get('medicine_name')
+        if not med_name:
+            db = load_db()
+            med = _find_by_id(db.get('medicines', []), donation.get('medicine_id'))
+            med_name = (med or {}).get('name') or f"donation #{item_id}"
+    except Exception:
+        med_name = f"donation #{item_id}"
     _create_item('notifications', {
         'user_id': user_id,
         'type': 'donation',
-        'title': 'Donation Rejected',
-        'message': f"Your claim for donation #{item_id} was rejected.",
+        'title': 'Request Rejected',
+        'message': f"Your request for {med_name} was rejected.",
     })
     return jsonify(donation)
+
+# Allow a user to cancel their pending claim
+@app.route('/api/donations/<int:item_id>/cancel-claim', methods=['POST'])
+def cancel_donation_claim(item_id):
+    payload = request.get_json() or {}
+    user_id = payload.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'user_id is required'}), 400
+    db = load_db()
+    donation = _find_by_id(db.get('donations', []), item_id)
+    if not donation:
+        return jsonify({'error': 'Donation not found'}), 404
+    if donation.get('claimed_by') != user_id:
+        return jsonify({'error': 'Not your request to cancel'}), 403
+    # Only allow cancel if still pending
+    if donation.get('claim_status') not in (None, 'pending'):
+        return jsonify({'error': 'Cannot cancel after decision'}), 400
+    # Reset claim fields
+    donation['claimed_by'] = None
+    donation['claimed_at'] = None
+    donation['claim_status'] = None
+    donation['claim_decided_at'] = None
+    save_db(db)
+    try:
+        med_name = donation.get('medicine_name')
+        if not med_name:
+            med = _find_by_id(db.get('medicines', []), donation.get('medicine_id'))
+            med_name = (med or {}).get('name') or f"donation #{item_id}"
+    except Exception:
+        med_name = f"donation #{item_id}"
+    _create_item('notifications', {
+        'user_id': user_id,
+        'type': 'donation',
+        'title': 'Request Canceled',
+        'message': f"You canceled your request for {med_name}.",
+    })
+    return jsonify({'message': 'Claim canceled'})
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', '5050'))

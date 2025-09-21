@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,33 +16,30 @@ import { api } from "@/lib/api";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { DashboardLayout } from "@/components/dashboard-layout";
 
-// Mock data - in a real app, this would come from the API based on the ID
-const getCheckoutData = (id: string) => {
-  if (id.startsWith("grant-")) {
-    return {
-      type: "grant",
-      id: id.replace("grant-", ""),
-      title: "Emergency Insulin Supply",
-      recipient: "Maria S.",
-      amount: 25,
-      description: "Help Maria cover her insulin costs during unemployment",
-      icon: Heart,
-    };
-  } else {
-    return {
-      type: "medicine",
-      id: id.replace("metformin-", ""),
-      title: "Metformin 500mg",
-      genericName: "Metformin Hydrochloride",
-      quantity: "30 tablets",
-      bulkPrice: 28,
-      originalPrice: 45,
-      savings: 17,
-      estimatedDelivery: "3-5 business days",
-      icon: Pill,
-    };
-  }
+type GrantCheckout = {
+  type: "grant";
+  id: string;
+  title: string;
+  recipient?: string;
+  amount: number;
+  description?: string;
+  icon: typeof Heart;
 };
+
+type MedicineCheckout = {
+  type: "medicine";
+  id: string;
+  title: string;
+  genericName?: string;
+  quantity?: string;
+  bulkPrice: number;
+  originalPrice: number;
+  savings: number;
+  estimatedDelivery?: string;
+  icon: typeof Pill;
+};
+
+type CheckoutData = GrantCheckout | MedicineCheckout;
 
 export default function CheckoutPage() {
   const params = useParams();
@@ -52,7 +49,87 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const checkoutData = getCheckoutData(params.id as string);
+  const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
+
+  useEffect(() => {
+    const idParam = String(params.id || "");
+    const isGrant = idParam.startsWith("grant-");
+    const init = async () => {
+      if (isGrant) {
+        const pureId = idParam.replace("grant-", "");
+        // amount from query (preferred), else compute remaining from API
+        const queryAmount = Number(searchParams.get("amount") || 0);
+        try {
+          const res = await fetch("/api/micro-grants");
+          const data = await res.json();
+          const grants = Array.isArray(data?.micro_grants) ? data.micro_grants : [];
+          const g = grants.find((x: any) => String(x.id) === String(pureId));
+          const remaining = g ? Math.max(0, Number(g.amountNeeded || 0) - Number(g.amountRaised || 0)) : 0;
+          const amount = queryAmount > 0 ? queryAmount : Math.max(1, remaining || 25);
+          setCheckoutData({
+            type: "grant",
+            id: pureId,
+            title: g?.title || "Grant Donation",
+            recipient: g?.requesterName || undefined,
+            amount,
+            description: g?.description || undefined,
+            icon: Heart,
+          });
+        } catch {
+          setCheckoutData({ type: "grant", id: pureId, title: "Grant Donation", amount: queryAmount || 25, icon: Heart });
+        }
+      } else {
+        const pureId = idParam.replace("metformin-", "");
+        try {
+          const res = await fetch(api(`/api/medicines/${pureId}`));
+          if (res.ok) {
+            const m = await res.json();
+            // Simple pricing model (placeholder until real prices exist)
+            const base = 45;
+            const discount = 17;
+            const originalPrice = base;
+            const savings = discount;
+            const bulkPrice = Math.max(1, originalPrice - savings);
+            setCheckoutData({
+              type: "medicine",
+              id: pureId,
+              title: m?.name || `Medicine #${pureId}`,
+              genericName: m?.generic_name || undefined,
+              quantity: "30 tablets",
+              bulkPrice,
+              originalPrice,
+              savings,
+              estimatedDelivery: "3-5 business days",
+              icon: Pill,
+            });
+          } else {
+            setCheckoutData({
+              type: "medicine",
+              id: pureId,
+              title: `Medicine #${pureId}`,
+              bulkPrice: 28,
+              originalPrice: 45,
+              savings: 17,
+              estimatedDelivery: "3-5 business days",
+              icon: Pill,
+            });
+          }
+        } catch {
+          setCheckoutData({
+            type: "medicine",
+            id: pureId,
+            title: `Medicine #${pureId}`,
+            bulkPrice: 28,
+            originalPrice: 45,
+            savings: 17,
+            estimatedDelivery: "3-5 business days",
+            icon: Pill,
+          });
+        }
+      }
+    };
+    void init();
+  }, [params.id, searchParams]);
 
   const [formData, setFormData] = useState({
     email: "john.doe@email.com",
@@ -79,7 +156,7 @@ export default function CheckoutPage() {
     // Simulate payment processing
     setTimeout(() => {
       setIsProcessing(false);
-      // Update counters for medicine purchases only
+      // Update records based on transaction type
       try {
         if (checkoutData.type === "medicine" && user?.id) {
           void (async () => {
@@ -112,6 +189,44 @@ export default function CheckoutPage() {
               }
             } catch {}
           })();
+        } else if (checkoutData.type === "grant" && user?.id) {
+          void (async () => {
+            try {
+              // 1) Increment amountRaised on the grant
+              const grantId = Number(checkoutData.id)
+              const amount = Number(checkoutData.amount)
+              await fetch(`/api/micro-grants`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: grantId, amount }),
+              })
+              // 2) Increment user's counters.grant_given by 1
+              const listRes = await fetch(api(`/api/counters?user_id=${user.id}`))
+              if (listRes.ok) {
+                const list = await listRes.json()
+                const c = Array.isArray(list) ? list[0] : null
+                if (c && c.id) {
+                  const current = Number(c.grant_given || 0)
+                  await fetch(api(`/api/counters/${c.id}`), {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ grant_given: current + 1 }),
+                  })
+                } else {
+                  await fetch(api(`/api/counters`), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      user_id: user.id,
+                      medicine_purchases: 0,
+                      donations: 0,
+                      grant_given: 1,
+                    }),
+                  })
+                }
+              }
+            } catch {}
+          })()
         }
       } catch {}
       // If a notif_id was provided (from Take Action), delete the notification now that checkout is done
@@ -127,10 +242,31 @@ export default function CheckoutPage() {
           })();
         }
       } catch {}
-      // Redirect to receipt page
-      router.push(`/receipt/${params.id}`);
+      // Redirect to receipt page (include amount for grants)
+      try {
+        if (checkoutData && checkoutData.type === 'grant') {
+          router.push(`/receipt/${params.id}?amount=${Number((checkoutData as any).amount || 0)}`)
+        } else {
+          router.push(`/receipt/${params.id}`)
+        }
+      } catch {
+        router.push(`/receipt/${params.id}`)
+      }
     }, 3000);
   };
+
+  if (!checkoutData) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   const IconComponent = checkoutData.icon;
 
@@ -163,7 +299,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">
-                      {checkoutData.title}
+                    {checkoutData.title}
                     </h3>
                     {checkoutData.type === "medicine" ? (
                       <>

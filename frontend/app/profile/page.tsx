@@ -83,8 +83,7 @@ export default function ProfilePage() {
             setCounters({
               medicine_purchases: Number(c.medicine_purchases || 0),
               donations: Number(c.donations || 0),
-              // Per request, keep Grants Supported at 0 for now
-              grant_given: 0,
+              grant_given: Number(c.grant_given || 0),
             });
         }
         // Dynamically compute total donations made by this user (lifetime)
@@ -95,8 +94,6 @@ export default function ProfilePage() {
           setCounters((prev) => ({
             ...prev,
             donations: totalDonations,
-            // Ensure grants remain 0 as requested
-            grant_given: 0,
           }));
         }
       } catch (_) {}

@@ -49,6 +49,16 @@
       "pending_approval_meds": [],
       "id": 9,
       "created_at": "2025-09-20T21:20:07.993481"
+    },
+    {
+      "email": "arnab",
+      "password": "a",
+      "role": "patient",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 10,
+      "created_at": "2025-09-21T00:14:03.025344"
     }
   ],
   "medicines": [
@@ -79,7 +89,7 @@
       "description": "Type 2 diabetes medication",
       "created_at": "2025-09-19T09:20:00.000Z",
       "expire_at": "2027-03-15",
-      "current_demand": 9,
+      "current_demand": 10,
       "required_demand": 25
     },
     {
@@ -99,7 +109,7 @@
       "description": "Treatment for rare blood disorders (PNH, aHUS)",
       "created_at": "2025-09-19T09:40:00.000Z",
       "expire_at": "2026-09-01",
-      "current_demand": 9,
+      "current_demand": 11,
       "required_demand": 15
     },
     {
@@ -146,7 +156,7 @@
       "id": 10,
       "name": "Adalimumab (Humira) 40mg",
       "generic_name": "Adalimumab",
-      "description": "Autoimmune disease therapy (RA, Crohn\u00e2\u20ac\u2122s, psoriasis)",
+      "description": "Autoimmune disease therapy (RA, Crohn\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00a1\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u201a\u00ac\u00c5\u00be\u00c3\u201a\u00c2\u00a2s, psoriasis)",
       "created_at": "2025-09-19T10:30:00.000Z",
       "expire_at": "2026-05-05",
       "current_demand": 20,
@@ -410,18 +420,25 @@
       "medicine_id": 4,
       "quantity": 1,
       "approved": false,
-      "id": 26,
-      "created_at": "2025-09-20T23:41:23.142226",
-      "rejected_at": "2025-09-20T23:41:59.494006"
+      "id": 19,
+      "created_at": "2025-09-20T22:16:24.031020",
+      "rejected_at": "2025-09-20T22:40:26.494356"
     },
     {
-      "user_id": 9,
-      "medicine_id": 6,
+      "user_id": 5,
+      "medicine_id": 5,
       "quantity": 1,
-      "approved": false,
-      "id": 27,
-      "created_at": "2025-09-20T23:41:28.892787",
-      "rejected_at": "2025-09-20T23:41:59.629604"
+      "approved": true,
+      "id": 21,
+      "created_at": "2025-09-20T23:05:51.307726"
+    },
+    {
+      "user_id": 10,
+      "medicine_id": 3,
+      "quantity": 1,
+      "approved": true,
+      "id": 22,
+      "created_at": "2025-09-21T00:15:22.101533"
     }
   ],
   "donations": [
@@ -455,7 +472,11 @@
       "medicine_name": "Atorvastatin 20mg",
       "quantity": 2,
       "created_at": "2025-09-21T09:30:00.000Z",
-      "medicine_expires_at": "2026-09-01"
+      "medicine_expires_at": "2026-09-01",
+      "claimed_by": 5,
+      "claimed_at": "2025-09-20T23:26:08.126881",
+      "claim_status": "rejected",
+      "claim_decided_at": "2025-09-20T23:27:30.106172"
     },
     {
       "id": 5,
@@ -463,7 +484,11 @@
       "medicine_name": "Omeprazole 40mg",
       "quantity": 3,
       "created_at": "2025-09-21T10:15:00.000Z",
-      "medicine_expires_at": "2026-08-20"
+      "medicine_expires_at": "2026-08-20",
+      "claimed_by": null,
+      "claimed_at": null,
+      "claim_status": null,
+      "claim_decided_at": null
     },
     {
       "id": 6,
@@ -471,7 +496,11 @@
       "medicine_name": "Losartan 50mg",
       "quantity": 10,
       "created_at": "2025-09-21T11:00:00.000Z",
-      "medicine_expires_at": "2026-11-11"
+      "medicine_expires_at": "2026-11-11",
+      "claimed_by": null,
+      "claimed_at": null,
+      "claim_status": null,
+      "claim_decided_at": null
     },
     {
       "id": 7,
@@ -479,7 +508,11 @@
       "medicine_name": "Levothyroxine 75mcg",
       "quantity": 6,
       "created_at": "2025-09-21T12:20:00.000Z",
-      "medicine_expires_at": "2026-07-20"
+      "medicine_expires_at": "2026-07-20",
+      "claimed_by": null,
+      "claimed_at": null,
+      "claim_status": null,
+      "claim_decided_at": null
     },
     {
       "id": 8,
@@ -511,7 +544,11 @@
       "medicine_name": "Cetirizine 10mg",
       "quantity": 15,
       "created_at": "2025-09-21T17:20:00.000Z",
-      "medicine_expires_at": "2027-01-01"
+      "medicine_expires_at": "2027-01-01",
+      "claimed_by": 10,
+      "claimed_at": "2025-09-21T00:17:59.327203",
+      "claim_status": "approved",
+      "claim_decided_at": "2025-09-21T00:19:09.736795"
     },
     {
       "id": 12,
@@ -554,6 +591,62 @@
       "notes": "",
       "id": 16,
       "created_at": "2025-09-20T21:53:25.252684"
+    },
+    {
+      "donor_id": 5,
+      "medicine_id": null,
+      "medicine_name": "asdasd",
+      "quantity": "adfasd",
+      "quantity_text": "adfasd",
+      "medicine_expires_at": "2025-10-15",
+      "condition": "",
+      "doctor_name": "asdasd",
+      "notes": "asdasd",
+      "id": 17,
+      "created_at": "2025-09-20T22:42:51.694258"
+    },
+    {
+      "donor_id": 5,
+      "medicine_id": null,
+      "medicine_name": "follison",
+      "quantity": "12",
+      "quantity_text": "12",
+      "medicine_expires_at": "2025-09-20",
+      "condition": "unopened",
+      "doctor_name": "Dr. Majumder",
+      "notes": "",
+      "id": 18,
+      "created_at": "2025-09-20T23:34:26.782949",
+      "claimed_by": null,
+      "claimed_at": null,
+      "claim_status": null,
+      "claim_decided_at": null
+    },
+    {
+      "donor_id": 5,
+      "medicine_id": null,
+      "medicine_name": "9/11",
+      "quantity": "2",
+      "quantity_text": "2",
+      "medicine_expires_at": "2000-09-11",
+      "condition": "opened-partial",
+      "doctor_name": "Dr. Team",
+      "notes": "happiest day of the life",
+      "id": 19,
+      "created_at": "2025-09-20T23:43:40.508695"
+    },
+    {
+      "donor_id": 10,
+      "medicine_id": null,
+      "medicine_name": "Frontend",
+      "quantity": "1",
+      "quantity_text": "1",
+      "medicine_expires_at": "2025-09-21",
+      "condition": "",
+      "doctor_name": "Dr Tahmeed",
+      "notes": "",
+      "id": 20,
+      "created_at": "2025-09-21T00:18:17.815689"
     }
   ],
   "grants": [
@@ -691,14 +784,28 @@
       "user_id": 9,
       "id": 9,
       "created_at": "2025-09-20T21:20:08.001075"
+    },
+    {
+      "first_name": "arnab",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 10,
+      "id": 10,
+      "created_at": "2025-09-21T00:14:03.369266"
     }
   ],
   "counters": [
     {
       "user_id": 5,
-      "medicine_purchases": 4,
+      "medicine_purchases": 5,
       "donations": 0,
-      "grant_given": 0,
+      "grant_given": 2,
       "id": 1,
       "created_at": "2025-09-20T20:59:33.186148"
     },
@@ -709,44 +816,17 @@
       "grant_given": 0,
       "id": 2,
       "created_at": "2025-09-20T21:21:00.450123"
+    },
+    {
+      "user_id": 10,
+      "medicine_purchases": 1,
+      "donations": 0,
+      "grant_given": 1,
+      "id": 3,
+      "created_at": "2025-09-21T00:17:12.443300"
     }
   ],
   "notifications": [
-    {
-      "user_id": 5,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
-      "read": false,
-      "id": 29,
-      "created_at": "2025-09-20T20:57:48.319549"
-    },
-    {
-      "user_id": 5,
-      "type": "donation",
-      "title": "Donation Claimed",
-      "message": "You claimed donation #2.",
-      "id": 30,
-      "created_at": "2025-09-20T20:57:52.939528"
-    },
-    {
-      "user_id": 5,
-      "type": "donation",
-      "title": "Donation Approved",
-      "message": "Your claim for donation #2 was approved.",
-      "action_url": "/donate-meds?highlight=2",
-      "id": 32,
-      "created_at": "2025-09-20T20:58:11.683252"
-    },
-    {
-      "user_id": 5,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
-      "read": false,
-      "id": 33,
-      "created_at": "2025-09-20T21:16:57.639828"
-    },
     {
       "user_id": 9,
       "type": "wishlist",
@@ -794,130 +874,135 @@
     },
     {
       "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
-      "read": false,
-      "id": 46,
-      "created_at": "2025-09-20T23:16:43.814802"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
-      "read": false,
-      "id": 47,
-      "created_at": "2025-09-20T23:16:48.050219"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
-      "read": false,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
       "id": 48,
-      "created_at": "2025-09-20T23:16:52.311068"
+      "created_at": "2025-09-20T22:40:26.509619"
     },
     {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
-      "read": false,
-      "id": 49,
-      "created_at": "2025-09-20T23:19:53.244752"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
-      "read": false,
-      "id": 50,
-      "created_at": "2025-09-20T23:22:25.131054"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Nivolumab (Opdivo) 100mg was added to wishlist.",
-      "read": false,
-      "id": 51,
-      "created_at": "2025-09-20T23:32:00.465155"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
-      "read": false,
-      "id": 52,
-      "created_at": "2025-09-20T23:41:23.146823"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Trastuzumab (Herceptin) 150mg was added to wishlist.",
-      "read": false,
-      "id": 53,
-      "created_at": "2025-09-20T23:41:28.896699"
-    },
-    {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Submitted",
+      "message": "You requested Atorvastatin 20mg.",
       "id": 54,
-      "created_at": "2025-09-20T23:41:59.037407"
+      "created_at": "2025-09-20T23:26:08.144262",
+      "read": true
     },
     {
-      "user_id": 9,
-      "type": "approval",
+      "user_id": 5,
+      "type": "donation",
       "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
+      "message": "Your request for Atorvastatin 20mg was rejected.",
       "id": 55,
-      "created_at": "2025-09-20T23:41:59.198515"
+      "created_at": "2025-09-20T23:27:30.121203",
+      "read": true
     },
     {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Submitted",
+      "message": "You requested follison.",
       "id": 56,
-      "created_at": "2025-09-20T23:41:59.350240"
+      "created_at": "2025-09-20T23:34:35.187354",
+      "read": true
     },
     {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Canceled",
+      "message": "You canceled your request for follison.",
       "id": 57,
-      "created_at": "2025-09-20T23:41:59.495091"
+      "created_at": "2025-09-20T23:34:51.437079",
+      "read": true
     },
     {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Submitted",
+      "message": "You requested Losartan 50mg.",
       "id": 58,
-      "created_at": "2025-09-20T23:41:59.630984"
+      "created_at": "2025-09-20T23:37:21.368365",
+      "read": true
+    },
+    {
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Submitted",
+      "message": "You requested Levothyroxine 75mcg.",
+      "id": 59,
+      "created_at": "2025-09-20T23:43:55.395391",
+      "read": true
+    },
+    {
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Canceled",
+      "message": "You canceled your request for Levothyroxine 75mcg.",
+      "id": 60,
+      "created_at": "2025-09-20T23:43:57.877065",
+      "read": true
+    },
+    {
+      "user_id": 5,
+      "type": "donation",
+      "title": "Request Canceled",
+      "message": "You canceled your request for Losartan 50mg.",
+      "id": 61,
+      "created_at": "2025-09-20T23:44:06.330561",
+      "read": true
+    },
+    {
+      "user_id": 10,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Metformin 500mg was added to wishlist.",
+      "read": true,
+      "id": 62,
+      "created_at": "2025-09-21T00:15:22.156858"
+    },
+    {
+      "user_id": 5,
+      "type": "approval",
+      "title": "Request Approved",
+      "message": "Your request for Napa Paracetamol 300mg has been approved.",
+      "action_url": "/checkout/5",
+      "id": 63,
+      "created_at": "2025-09-21T00:16:07.898143"
+    },
+    {
+      "user_id": 10,
+      "type": "donation",
+      "title": "Request Submitted",
+      "message": "You requested Cetirizine 10mg.",
+      "id": 65,
+      "created_at": "2025-09-21T00:17:59.349622",
+      "read": true
+    },
+    {
+      "user_id": 10,
+      "type": "donation",
+      "title": "Request Approved",
+      "message": "Your request for Cetirizine 10mg was approved.",
+      "action_url": "/donate-meds?highlight=11",
+      "id": 66,
+      "created_at": "2025-09-21T00:19:09.755930",
+      "read": true
     }
   ],
   "transactions": [],
   "demoData": [],
   "meta": {
     "counters": {
-      "users": 9,
+      "users": 10,
       "medicines": 30,
-      "wishlists": 27,
-      "donations": 16,
+      "wishlists": 22,
+      "donations": 20,
       "grants": 1,
-      "profiles": 9,
-      "counters": 2,
+      "profiles": 10,
+      "counters": 3,
       "demoData": 0,
-      "notifications": 58,
+      "notifications": 66,
       "transactions": 0
     }
   },
@@ -954,9 +1039,9 @@
       "title": "fgsfsdsdf",
       "description": "12323 2",
       "amountNeeded": 10,
-      "amountRaised": 0,
+      "amountRaised": 10,
       "timePosted": "just now",
-      "supporters": 0,
+      "supporters": 1,
       "verified": false,
       "urgent": false,
       "requestor_id": 5
@@ -993,9 +1078,9 @@
       "title": "Pay a sex worker",
       "description": "You know man, wanted to fuck she took my money and ducked",
       "amountNeeded": 200,
-      "amountRaised": 0,
+      "amountRaised": 200,
       "timePosted": "just now",
-      "supporters": 0,
+      "supporters": 1,
       "verified": false,
       "urgent": false
     },
