@@ -99,7 +99,7 @@
       "description": "Treatment for rare blood disorders (PNH, aHUS)",
       "created_at": "2025-09-19T09:40:00.000Z",
       "expire_at": "2026-09-01",
-      "current_demand": 7,
+      "current_demand": 9,
       "required_demand": 15
     },
     {
@@ -146,7 +146,7 @@
       "id": 10,
       "name": "Adalimumab (Humira) 40mg",
       "generic_name": "Adalimumab",
-      "description": "Autoimmune disease therapy (RA, Crohn\u2019s, psoriasis)",
+      "description": "Autoimmune disease therapy (RA, Crohn’s, psoriasis)",
       "created_at": "2025-09-19T10:30:00.000Z",
       "expire_at": "2026-05-05",
       "current_demand": 20,
@@ -385,6 +385,14 @@
       "approved": true,
       "id": 16,
       "created_at": "2025-09-20T21:24:31.430902"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 5,
+      "quantity": 1,
+      "approved": true,
+      "id": 18,
+      "created_at": "2025-09-20T22:01:49.880063"
     }
   ],
   "donations": [
@@ -406,7 +414,11 @@
       "medicine_name": "Metformin 500mg",
       "quantity": 5,
       "created_at": "2025-09-21T09:00:00.000Z",
-      "medicine_expires_at": "2026-02-10"
+      "medicine_expires_at": "2026-02-10",
+      "claimed_by": 9,
+      "claimed_at": "2025-09-20T21:51:22.218804",
+      "claim_status": "approved",
+      "claim_decided_at": "2025-09-20T21:54:33.830862"
     },
     {
       "id": 4,
@@ -500,6 +512,19 @@
       "notes": "",
       "id": 15,
       "created_at": "2025-09-20T21:01:54.852300"
+    },
+    {
+      "donor_id": 9,
+      "medicine_id": null,
+      "medicine_name": "Napal",
+      "quantity": "12",
+      "quantity_text": "12",
+      "medicine_expires_at": "2025-09-20",
+      "condition": "refrigerated",
+      "doctor_name": "Dr. Majumder",
+      "notes": "",
+      "id": 16,
+      "created_at": "2025-09-20T21:53:25.252684"
     }
   ],
   "grants": [
@@ -650,7 +675,7 @@
     },
     {
       "user_id": 9,
-      "medicine_purchases": 2,
+      "medicine_purchases": 4,
       "donations": 0,
       "grant_given": 0,
       "id": 2,
@@ -697,19 +722,36 @@
       "user_id": 9,
       "type": "wishlist",
       "title": "Added to Wishlist",
-      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
+      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
       "read": false,
-      "id": 35,
-      "created_at": "2025-09-20T21:20:16.161465"
+      "id": 39,
+      "created_at": "2025-09-20T21:50:46.894391"
+    },
+    {
+      "user_id": 9,
+      "type": "donation",
+      "title": "Donation Claimed",
+      "message": "You claimed donation #3.",
+      "id": 40,
+      "created_at": "2025-09-20T21:51:22.243269"
+    },
+    {
+      "user_id": 9,
+      "type": "donation",
+      "title": "Donation Approved",
+      "message": "Your claim for donation #3 was approved.",
+      "action_url": "/donate-meds?highlight=3",
+      "id": 42,
+      "created_at": "2025-09-20T21:54:33.844006"
     },
     {
       "user_id": 9,
       "type": "wishlist",
       "title": "Added to Wishlist",
-      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
+      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
       "read": false,
-      "id": 37,
-      "created_at": "2025-09-20T21:24:31.434071"
+      "id": 43,
+      "created_at": "2025-09-20T22:01:49.905747"
     }
   ],
   "transactions": [],
@@ -718,14 +760,140 @@
     "counters": {
       "users": 9,
       "medicines": 30,
-      "wishlists": 16,
-      "donations": 15,
+      "wishlists": 18,
+      "donations": 16,
       "grants": 1,
       "profiles": 9,
       "counters": 2,
       "demoData": 0,
-      "notifications": 38,
+      "notifications": 44,
       "transactions": 0
     }
-  }
+  },
+  "micro_grants": [
+    {
+      "id": 1,
+      "requesterName": "NUNU",
+      "title": "Sex worker need no required",
+      "description": "need my dick sucked NOW",
+      "amountNeeded": 100,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 9
+    },
+    {
+      "id": 9,
+      "requesterName": "Osama Bin Laden",
+      "title": "fgsfsdsdf",
+      "description": "12323 2",
+      "amountNeeded": 10,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 5
+    },
+    {
+      "id": 8,
+      "requesterName": "Osama Bin Laden",
+      "title": "belly surgery",
+      "description": "12",
+      "amountNeeded": 69,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 5
+    },
+    {
+      "id": 7,
+      "requesterName": "Osama Bin Laden",
+      "title": "my cancer medicine",
+      "description": "need this badly",
+      "amountNeeded": 111,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 5
+    },
+    {
+      "id": 6,
+      "requesterName": "Anonymous",
+      "title": "Pay a sex worker",
+      "description": "You know man, wanted to fuck she took my money and ducked",
+      "amountNeeded": 200,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false
+    },
+    {
+      "id": 5,
+      "requesterName": "Anonymous",
+      "title": "exampe",
+      "description": "11111",
+      "amountNeeded": 100,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false
+    },
+    {
+      "id": 1,
+      "requesterName": "Maria S.",
+      "title": "Emergency Insulin Supply",
+      "description": "Lost my job last month and can't afford my insulin. Need help covering the cost until I find new employment. Have been diabetic for 15 years and this medication is critical for my survival.",
+      "amountNeeded": 180,
+      "amountRaised": 120,
+      "timePosted": "2 days ago",
+      "supporters": 8,
+      "verified": true,
+      "urgent": true
+    },
+    {
+      "id": 2,
+      "requesterName": "James K.",
+      "title": "Heart Medication Support",
+      "description": "Recently diagnosed with heart condition. Insurance doesn't cover the full cost of my new medication. Working two jobs but still struggling to make ends meet.",
+      "amountNeeded": 150,
+      "amountRaised": 45,
+      "timePosted": "5 days ago",
+      "supporters": 3,
+      "verified": true,
+      "urgent": false
+    },
+    {
+      "id": 3,
+      "requesterName": "Sarah M.",
+      "title": "Cancer Treatment Assistance",
+      "description": "Undergoing chemotherapy and need help with medication costs. The side effects make it hard to work full time. Any support would mean the world to me and my family.",
+      "amountNeeded": 200,
+      "amountRaised": 85,
+      "timePosted": "1 week ago",
+      "supporters": 6,
+      "verified": true,
+      "urgent": false
+    },
+    {
+      "id": 4,
+      "requesterName": "Robert L.",
+      "title": "Diabetes Management",
+      "description": "Senior on fixed income struggling with rising medication costs. Need help covering my monthly diabetes supplies and medication. Have been managing this condition for over 20 years.",
+      "amountNeeded": 95,
+      "amountRaised": 25,
+      "timePosted": "3 days ago",
+      "supporters": 2,
+      "verified": false,
+      "urgent": false
+    }
+  ]
 }

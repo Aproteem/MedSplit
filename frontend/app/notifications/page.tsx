@@ -167,6 +167,4 @@ export default function NotificationsPage() {
 
 function cn(...classes: Array<string | false | null | undefined>) {
 	return classes.filter((c): c is string => Boolean(c)).join(" ")
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
 }
