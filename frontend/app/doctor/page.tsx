@@ -78,21 +78,25 @@ export default function DoctorDashboardPage() {
   const approveWishlist = async (id: number) => {
     await fetch(api(`/api/wishlists/${id}/approve`), { method: "POST" })
     await loadAll()
+    try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
   }
 
   const rejectWishlist = async (id: number) => {
     await fetch(api(`/api/wishlists/${id}/reject`), { method: "POST" })
     await loadAll()
+    try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
   }
 
   const approveDonationClaim = async (id: number) => {
     await fetch(api(`/api/donations/${id}/approve-claim`), { method: "POST" })
     await loadAll()
+    try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
   }
 
   const rejectDonationClaim = async (id: number) => {
     await fetch(api(`/api/donations/${id}/reject-claim`), { method: "POST" })
     await loadAll()
+    try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
   }
 
   const pendingWishlists = wishlists.filter(w => w.approved !== true && !w.rejected_at)

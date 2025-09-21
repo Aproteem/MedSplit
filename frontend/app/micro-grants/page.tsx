@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,61 +9,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DollarSign, Heart, Clock, FileText, Plus, Users } from "lucide-react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { GrantRequestForm } from "@/components/grant-request-form"
+import { useCurrentUser } from "@/hooks/use-current-user"
 
-const grantRequests = [
-  {
-    id: 1,
-    requesterName: "Maria S.",
-    title: "Emergency Insulin Supply",
-    description:
-      "Lost my job last month and can't afford my insulin. Need help covering the cost until I find new employment. Have been diabetic for 15 years and this medication is critical for my survival.",
-    amountNeeded: 180,
-    amountRaised: 120,
-    timePosted: "2 days ago",
-    supporters: 8,
-    verified: true,
-    urgent: true,
-  },
-  {
-    id: 2,
-    requesterName: "James K.",
-    title: "Heart Medication Support",
-    description:
-      "Recently diagnosed with heart condition. Insurance doesn't cover the full cost of my new medication. Working two jobs but still struggling to make ends meet.",
-    amountNeeded: 150,
-    amountRaised: 45,
-    timePosted: "5 days ago",
-    supporters: 3,
-    verified: true,
-    urgent: false,
-  },
-  {
-    id: 3,
-    requesterName: "Sarah M.",
-    title: "Cancer Treatment Assistance",
-    description:
-      "Undergoing chemotherapy and need help with medication costs. The side effects make it hard to work full time. Any support would mean the world to me and my family.",
-    amountNeeded: 200,
-    amountRaised: 85,
-    timePosted: "1 week ago",
-    supporters: 6,
-    verified: true,
-    urgent: false,
-  },
-  {
-    id: 4,
-    requesterName: "Robert L.",
-    title: "Diabetes Management",
-    description:
-      "Senior on fixed income struggling with rising medication costs. Need help covering my monthly diabetes supplies and medication. Have been managing this condition for over 20 years.",
-    amountNeeded: 95,
-    amountRaised: 25,
-    timePosted: "3 days ago",
-    supporters: 2,
-    verified: false,
-    urgent: false,
-  },
-]
+type Grant = {
+  id: number
+  requesterName: string
+  title: string
+  description: string
+  amountNeeded: number
+  amountRaised: number
+  timePosted: string
+  supporters: number
+  verified: boolean
+  urgent: boolean
+  requestor_id?: number | null
+}
 
 const myGrants = [
   {
@@ -81,6 +41,29 @@ const myGrants = [
 export default function MicroGrantsPage() {
   const [showGrantForm, setShowGrantForm] = useState(false)
   const [donatedGrants, setDonatedGrants] = useState<number[]>([])
+  const [grants, setGrants] = useState<Grant[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const { user } = useCurrentUser()
+
+  useEffect(() => {
+    const loadGrants = async () => {
+      try {
+        const res = await fetch("/api/micro-grants")
+        const data = await res.json()
+        setGrants(Array.isArray(data?.micro_grants) ? data.micro_grants : [])
+      } catch (e) {
+        setGrants([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadGrants()
+  }, [])
+
+  const myGrantsForUser = useMemo(() => {
+    if (!user) return [] as Grant[]
+    return grants.filter((g) => Number(g.requestor_id) === Number(user.id))
+  }, [grants, user])
 
   const handleDonate = (grantId: number) => {
     // In a real app, this would open a payment modal
@@ -123,7 +106,7 @@ export default function MicroGrantsPage() {
                   <FileText className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{grantRequests.length}</div>
+                  <div className="text-2xl font-bold">{grants.length}</div>
                   <p className="text-xs text-muted-foreground">Seeking support</p>
                 </CardContent>
               </Card>
@@ -135,7 +118,7 @@ export default function MicroGrantsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${grantRequests.reduce((sum, grant) => sum + grant.amountRaised, 0)}
+                    ${grants.reduce((sum, grant) => sum + grant.amountRaised, 0)}
                   </div>
                   <p className="text-xs text-muted-foreground">Community support</p>
                 </CardContent>
@@ -148,7 +131,7 @@ export default function MicroGrantsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {grantRequests.reduce((sum, grant) => sum + grant.supporters, 0)}
+                    {grants.reduce((sum, grant) => sum + grant.supporters, 0)}
                   </div>
                   <p className="text-xs text-muted-foreground">Supporters</p>
                 </CardContent>
@@ -159,10 +142,10 @@ export default function MicroGrantsPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Current Grant Requests</h2>
-                <p className="text-gray-600">{grantRequests.length} active requests</p>
+                <p className="text-gray-600">{grants.length} active requests</p>
               </div>
 
-              {grantRequests.map((grant) => {
+              {grants.map((grant) => {
                 const progressPercentage = getProgressPercentage(grant.amountRaised, grant.amountNeeded)
                 const remainingAmount = grant.amountNeeded - grant.amountRaised
                 const hasDonated = donatedGrants.includes(grant.id)
@@ -263,28 +246,31 @@ export default function MicroGrantsPage() {
                 <CardDescription>Track your submitted grant requests and their progress</CardDescription>
               </CardHeader>
               <CardContent>
-                {myGrants.length > 0 ? (
+                {myGrantsForUser.length > 0 ? (
                   <div className="space-y-4">
-                    {myGrants.map((grant) => (
-                      <div key={grant.id} className="p-4 border rounded-lg">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold">{grant.title}</h3>
-                          <Badge
-                            variant={grant.status === "completed" ? "default" : "secondary"}
-                            className={grant.status === "completed" ? "bg-green-100 text-green-800" : ""}
-                          >
-                            {grant.status}
-                          </Badge>
+                    {myGrantsForUser.map((grant) => {
+                      const status = grant.amountRaised >= grant.amountNeeded ? "completed" : "active"
+                      return (
+                        <div key={grant.id} className="p-4 border rounded-lg">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-semibold">{grant.title}</h3>
+                            <Badge
+                              variant={status === "completed" ? "default" : "secondary"}
+                              className={status === "completed" ? "bg-green-100 text-green-800" : ""}
+                            >
+                              {status}
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600 text-sm mb-3">{grant.description}</p>
+                          <div className="flex justify-between items-center text-sm text-gray-500">
+                            <span>
+                              ${grant.amountRaised} of ${grant.amountNeeded} raised
+                            </span>
+                            <span>{grant.supporters} supporters</span>
+                          </div>
                         </div>
-                        <p className="text-gray-600 text-sm mb-3">{grant.description}</p>
-                        <div className="flex justify-between items-center text-sm text-gray-500">
-                          <span>
-                            ${grant.amountRaised} of ${grant.amountNeeded} raised
-                          </span>
-                          <span>{grant.supporters} supporters</span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 ) : (
                   <div className="text-center py-12">
@@ -305,7 +291,14 @@ export default function MicroGrantsPage() {
         </Tabs>
 
         {/* Grant Request Form Modal */}
-        {showGrantForm && <GrantRequestForm onClose={() => setShowGrantForm(false)} />}
+        {showGrantForm && (
+          <GrantRequestForm
+            onClose={() => setShowGrantForm(false)}
+            onSubmitted={(newGrant: any) => {
+              setGrants((prev) => [newGrant, ...prev])
+            }}
+          />
+        )}
       </div>
     </DashboardLayout>
   )

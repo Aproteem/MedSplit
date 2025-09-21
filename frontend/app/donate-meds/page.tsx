@@ -155,6 +155,8 @@ export default function DonateMedsPage() {
       }
       setRequestedMeds((prev) => [...prev, donationId])
       alert("Request sent for verification")
+      // Backend creates 1+ notifications (claimer, maybe donor). Increment for claimer
+      try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
     } catch (e: any) {
       alert(e?.message || "Failed to request donation")
     }

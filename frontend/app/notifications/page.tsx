@@ -35,7 +35,14 @@ export default function NotificationsPage() {
 			const res = await fetch(api(`/api/notifications?user_id=${user.id}`))
 			if (!res.ok) throw new Error("Failed to load notifications")
 			const list = await res.json()
-			setItems(Array.isArray(list) ? list : [])
+			const arr: Notification[] = Array.isArray(list) ? list : []
+			const sorted = [...arr].sort((a, b) => {
+				const ta = a.created_at ? Date.parse(a.created_at) : 0
+				const tb = b.created_at ? Date.parse(b.created_at) : 0
+				if (tb !== ta) return tb - ta
+				return (Number(b.id) || 0) - (Number(a.id) || 0)
+			})
+			setItems(sorted)
 		} catch (e: any) {
 			setError(e?.message || "Failed to load notifications")
 			setItems([])
@@ -51,13 +58,18 @@ export default function NotificationsPage() {
 	const markAllRead = async () => {
 		if (!user?.id) return
 		await fetch(api(`/api/notifications/clear?action=read&user_id=${user.id}`), { method: "POST" })
-		await load()
+		// Compute unread before we locally mark
+		const unreadBefore = items.filter((n) => !n.read).length
+		setItems((prev) => prev.map(n => ({ ...n, read: true })))
+		window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: -unreadBefore } }))
 	}
 
 	const clearAll = async () => {
 		if (!user?.id) return
 		await fetch(api(`/api/notifications/clear?action=delete&user_id=${user.id}`), { method: "POST" })
-		await load()
+		const unreadBefore = items.filter((n) => !n.read).length
+		setItems([])
+		window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: -unreadBefore } }))
 	}
 
 	return (
@@ -78,7 +90,15 @@ export default function NotificationsPage() {
 
 				<div className="space-y-4">
 					{items.map((n) => (
-						<Card key={n.id} className={cn("transition-colors", !n.read && "bg-blue-50 border-blue-200")}>
+                        <Card key={n.id} className={cn("transition-colors", !n.read && "bg-blue-50 border-blue-200")} onClick={async () => {
+                            if (!n.read) {
+                                await fetch(api(`/api/notifications/${n.id}`), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ read: true }) })
+                                // Optimistically update local state to avoid refetch flicker
+                                setItems((prev) => prev.map(item => item.id === n.id ? { ...item, read: true } : item))
+                                // Decrement badge by 1
+                                window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: -1 } }))
+                            }
+                        }}>
 							<CardContent className="p-6">
 								<div className="flex items-start space-x-4">
 									<div className={cn("p-2 rounded-full bg-gray-100", n.read ? "text-gray-400" : "text-blue-500")}> 
@@ -124,6 +144,6 @@ export default function NotificationsPage() {
 	)
 }
 
-function cn(...classes: string[]) {
-	return classes.filter(Boolean).join(" ")
+function cn(...classes: Array<string | false | null | undefined>) {
+	return classes.filter((c): c is string => Boolean(c)).join(" ")
 }

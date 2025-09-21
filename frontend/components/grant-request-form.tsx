@@ -9,12 +9,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { X, Upload, FileText, DollarSign } from "lucide-react"
+import { useCurrentUser } from "@/hooks/use-current-user"
 
 interface GrantRequestFormProps {
   onClose: () => void
+  onSubmitted?: (grant: any) => void
 }
 
-export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
+export function GrantRequestForm({ onClose, onSubmitted }: GrantRequestFormProps) {
+  const { user } = useCurrentUser()
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
@@ -22,17 +25,39 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
     reason: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false)
-      alert("Grant request submitted! It will be reviewed and added to the community grants list.")
+    setError(null)
+    try {
+      const res = await fetch('/api/micro-grants', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.title,
+          amount: Number(formData.amount),
+          description: formData.description,
+          userId: user?.id,
+          email: user?.email,
+          reason: formData.reason,
+        })
+      })
+      if (!res.ok) {
+        const msg = await res.json().catch(() => ({}))
+        throw new Error(msg?.error || 'Failed to submit')
+      }
+      const payload = await res.json().catch(() => ({}))
+      if (payload?.micro_grant && typeof onSubmitted === 'function') {
+        onSubmitted(payload.micro_grant)
+      }
       onClose()
-    }, 2000)
+    } catch (err: any) {
+      setError(err?.message || 'Something went wrong')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {
@@ -164,6 +189,7 @@ export function GrantRequestForm({ onClose }: GrantRequestFormProps) {
                 {isSubmitting ? "Submitting..." : "Submit Grant Request"}
               </Button>
             </div>
+          {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
           </form>
         </CardContent>
       </Card>

@@ -96,6 +96,8 @@ export default function BuyMedsPage() {
 				const created = (await res.json()) as WishlistItem
 				setWishlist((prev) => [...prev, created])
 				alert("Request sent for verification")
+				// New notification created for the user → increment badge
+				try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
 			} else {
 				const res = await fetch(api(`/api/wishlists/${existing.id}`), { method: "DELETE" })
 				if (!res.ok) throw new Error("Failed to remove from wishlist")
