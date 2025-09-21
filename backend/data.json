@@ -39,6 +39,16 @@
       "pending_approval_meds": [],
       "id": 8,
       "created_at": "2025-09-20T20:22:19.451013"
+    },
+    {
+      "email": "email",
+      "password": "1",
+      "role": "patient",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 9,
+      "created_at": "2025-09-20T21:20:07.993481"
     }
   ],
   "medicines": [
@@ -49,7 +59,7 @@
       "description": "Antibiotic",
       "created_at": "2025-09-19T09:00:00.000Z",
       "expire_at": "2026-06-01",
-      "current_demand": 12,
+      "current_demand": 13,
       "required_demand": 20
     },
     {
@@ -79,7 +89,7 @@
       "description": "Long-acting insulin for diabetes",
       "created_at": "2025-09-19T09:30:00.000Z",
       "expire_at": "2026-02-10",
-      "current_demand": 15,
+      "current_demand": 17,
       "required_demand": 30
     },
     {
@@ -209,7 +219,7 @@
       "description": "Antiviral for Hepatitis C",
       "created_at": "2025-09-19T11:40:00.000Z",
       "expire_at": "2026-05-11",
-      "current_demand": 18,
+      "current_demand": 19,
       "required_demand": 28
     },
     {
@@ -345,127 +355,50 @@
   ],
   "wishlists": [
     {
-      "user_id": 1,
+      "user_id": 5,
       "medicine_id": 1,
       "quantity": 1,
       "approved": true,
-      "id": 1,
-      "created_at": "2025-09-20T17:10:15.203972"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 2,
-      "quantity": 1,
-      "approved": true,
-      "id": 2,
-      "created_at": "2025-09-20T17:10:17.065398"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 3,
-      "quantity": 1,
-      "approved": true,
-      "id": 3,
-      "created_at": "2025-09-20T17:10:20.116906"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 4,
-      "quantity": 1,
-      "approved": true,
-      "id": 4,
-      "created_at": "2025-09-20T17:10:22.133877"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 1,
-      "quantity": 1,
-      "approved": true,
-      "id": 5,
-      "created_at": "2025-09-20T17:11:53.795007"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 2,
-      "quantity": 1,
-      "approved": true,
-      "id": 6,
-      "created_at": "2025-09-20T17:12:00.687377"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 1,
-      "quantity": 1,
-      "approved": false,
-      "id": 7,
-      "created_at": "2025-09-20T17:15:11.066076",
-      "rejected_at": "2025-09-20T20:22:34.268227"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 9,
-      "quantity": 1,
-      "approved": false,
-      "id": 8,
-      "created_at": "2025-09-20T17:46:42.908775",
-      "rejected_at": "2025-09-20T20:22:35.074826"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 9,
-      "quantity": 1,
-      "approved": false,
-      "id": 9,
-      "created_at": "2025-09-20T17:46:57.140337",
-      "rejected_at": "2025-09-20T20:22:35.903625"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 9,
-      "quantity": 1,
-      "approved": false,
-      "id": 10,
-      "created_at": "2025-09-20T17:47:01.828596",
-      "rejected_at": "2025-09-20T20:22:36.706500"
-    },
-    {
-      "user_id": 1,
-      "medicine_id": 1,
-      "quantity": 1,
-      "approved": false,
-      "id": 11,
-      "created_at": "2025-09-20T17:47:16.669402",
-      "rejected_at": "2025-09-20T20:22:37.515913"
+      "id": 13,
+      "created_at": "2025-09-20T20:57:48.317486"
     },
     {
       "user_id": 5,
-      "medicine_id": 5,
+      "medicine_id": 4,
       "quantity": 1,
       "approved": true,
-      "id": 12,
-      "created_at": "2025-09-20T20:23:28.658673"
+      "id": 14,
+      "created_at": "2025-09-20T21:16:57.636901"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 4,
+      "quantity": 1,
+      "approved": true,
+      "id": 15,
+      "created_at": "2025-09-20T21:20:16.160088"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 17,
+      "quantity": 1,
+      "approved": true,
+      "id": 16,
+      "created_at": "2025-09-20T21:24:31.430902"
     }
   ],
   "donations": [
-    {
-      "id": 1,
-      "donor_id": 2,
-      "medicine_name": "Amoxicillin 500mg",
-      "quantity": 20,
-      "created_at": "2025-09-20T10:15:00.000Z",
-      "medicine_expires_at": "2026-06-01",
-      "claimed_by": 1,
-      "claimed_at": "2025-09-20T17:12:13.490862",
-      "claim_status": "rejected",
-      "claim_decided_at": "2025-09-20T20:22:38.933829"
-    },
     {
       "id": 2,
       "donor_id": 2,
       "medicine_name": "Ibuprofen 200mg",
       "quantity": 40,
       "created_at": "2025-09-20T11:00:00.000Z",
-      "medicine_expires_at": "2025-12-31"
+      "medicine_expires_at": "2025-12-31",
+      "claimed_by": 5,
+      "claimed_at": "2025-09-20T20:57:52.937765",
+      "claim_status": "approved",
+      "claim_decided_at": "2025-09-20T20:58:11.680859"
     },
     {
       "id": 3,
@@ -558,19 +491,15 @@
     {
       "donor_id": 5,
       "medicine_id": null,
-      "medicine_name": "Dadar dhon",
-      "quantity": "1",
-      "quantity_text": "1",
-      "medicine_expires_at": "2025-09-20",
+      "medicine_name": "Vhoda",
+      "quantity": "2",
+      "quantity_text": "2",
+      "medicine_expires_at": "2025-09-26",
       "condition": "refrigerated",
-      "doctor_name": "jason",
+      "doctor_name": "jon smoth",
       "notes": "",
-      "id": 14,
-      "created_at": "2025-09-20T20:24:03.995587",
-      "claimed_by": 5,
-      "claimed_at": "2025-09-20T20:24:16.356645",
-      "claim_status": "approved",
-      "claim_decided_at": "2025-09-20T20:24:55.700716"
+      "id": 15,
+      "created_at": "2025-09-20T21:01:54.852300"
     }
   ],
   "grants": [
@@ -694,152 +623,108 @@
       "user_id": 8,
       "id": 8,
       "created_at": "2025-09-20T20:22:19.763706"
+    },
+    {
+      "first_name": "NUNU",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 9,
+      "id": 9,
+      "created_at": "2025-09-20T21:20:08.001075"
     }
   ],
-  "counters": [],
+  "counters": [
+    {
+      "user_id": 5,
+      "medicine_purchases": 4,
+      "donations": 0,
+      "grant_given": 0,
+      "id": 1,
+      "created_at": "2025-09-20T20:59:33.186148"
+    },
+    {
+      "user_id": 9,
+      "medicine_purchases": 2,
+      "donations": 0,
+      "grant_given": 0,
+      "id": 2,
+      "created_at": "2025-09-20T21:21:00.450123"
+    }
+  ],
   "notifications": [
-    {
-      "user_id": 1,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
-      "read": false,
-      "id": 14,
-      "created_at": "2025-09-20T17:15:11.067802"
-    },
-    {
-      "user_id": 1,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Lenalidomide (Revlimid) 25mg was added to wishlist.",
-      "read": false,
-      "id": 15,
-      "created_at": "2025-09-20T17:46:42.948164"
-    },
-    {
-      "user_id": 1,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Lenalidomide (Revlimid) 25mg was added to wishlist.",
-      "read": false,
-      "id": 16,
-      "created_at": "2025-09-20T17:46:57.196342"
-    },
-    {
-      "user_id": 1,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Lenalidomide (Revlimid) 25mg was added to wishlist.",
-      "read": false,
-      "id": 17,
-      "created_at": "2025-09-20T17:47:01.864236"
-    },
-    {
-      "user_id": 1,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
-      "read": false,
-      "id": 18,
-      "created_at": "2025-09-20T17:47:16.709548"
-    },
-    {
-      "user_id": 1,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
-      "id": 19,
-      "created_at": "2025-09-20T20:22:34.290326"
-    },
-    {
-      "user_id": 1,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
-      "id": 20,
-      "created_at": "2025-09-20T20:22:35.089203"
-    },
-    {
-      "user_id": 1,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
-      "id": 21,
-      "created_at": "2025-09-20T20:22:35.917764"
-    },
-    {
-      "user_id": 1,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
-      "id": 22,
-      "created_at": "2025-09-20T20:22:36.719591"
-    },
-    {
-      "user_id": 1,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
-      "id": 23,
-      "created_at": "2025-09-20T20:22:37.528999"
-    },
-    {
-      "user_id": 1,
-      "type": "donation",
-      "title": "Donation Rejected",
-      "message": "Your claim for donation #1 was rejected.",
-      "id": 24,
-      "created_at": "2025-09-20T20:22:38.948497"
-    },
     {
       "user_id": 5,
       "type": "wishlist",
       "title": "Added to Wishlist",
-      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
+      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
       "read": false,
-      "id": 25,
-      "created_at": "2025-09-20T20:23:28.689670"
+      "id": 29,
+      "created_at": "2025-09-20T20:57:48.319549"
     },
     {
       "user_id": 5,
       "type": "donation",
       "title": "Donation Claimed",
-      "message": "You claimed donation #14.",
-      "id": 26,
-      "created_at": "2025-09-20T20:24:16.378740"
+      "message": "You claimed donation #2.",
+      "id": 30,
+      "created_at": "2025-09-20T20:57:52.939528"
     },
     {
       "user_id": 5,
       "type": "donation",
       "title": "Donation Approved",
-      "message": "Your claim for donation #14 was approved.",
-      "action_url": "/donate-meds?highlight=14",
-      "id": 27,
-      "created_at": "2025-09-20T20:24:55.715910"
+      "message": "Your claim for donation #2 was approved.",
+      "action_url": "/donate-meds?highlight=2",
+      "id": 32,
+      "created_at": "2025-09-20T20:58:11.683252"
     },
     {
       "user_id": 5,
-      "type": "approval",
-      "title": "Request Approved",
-      "message": "Your medicine request has been approved.",
-      "action_url": "/checkout/5",
-      "id": 28,
-      "created_at": "2025-09-20T20:24:57.228238"
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
+      "read": false,
+      "id": 33,
+      "created_at": "2025-09-20T21:16:57.639828"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Insulin Glargine (Lantus) 100 units/mL was added to wishlist.",
+      "read": false,
+      "id": 35,
+      "created_at": "2025-09-20T21:20:16.161465"
+    },
+    {
+      "user_id": 9,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Sofosbuvir (Sovaldi) 400mg was added to wishlist.",
+      "read": false,
+      "id": 37,
+      "created_at": "2025-09-20T21:24:31.434071"
     }
   ],
   "transactions": [],
   "demoData": [],
   "meta": {
     "counters": {
-      "users": 8,
+      "users": 9,
       "medicines": 30,
-      "wishlists": 12,
-      "donations": 14,
+      "wishlists": 16,
+      "donations": 15,
       "grants": 1,
-      "profiles": 8,
-      "counters": 0,
+      "profiles": 9,
+      "counters": 2,
       "demoData": 0,
-      "notifications": 28,
+      "notifications": 38,
       "transactions": 0
     }
   }
