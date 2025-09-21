@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -21,59 +21,161 @@ import {
   Pill,
   Home,
 } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-// Mock data - in a real app, this would come from the API based on the ID
-const getReceiptData = (id: string) => {
-  const receiptId = `RCP-${Date.now().toString().slice(-6)}`;
-  const currentDate = new Date().toLocaleDateString();
-  const currentTime = new Date().toLocaleTimeString();
+type ReceiptGrant = {
+  type: 'grant'
+  receiptId: string
+  date: string
+  time: string
+  title: string
+  recipient?: string
+  amount: number
+  description?: string
+  icon: typeof Heart
+  status: string
+  transactionId: string
+}
 
-  if (id.startsWith("grant-")) {
-    return {
-      type: "grant",
-      receiptId,
-      date: currentDate,
-      time: currentTime,
-      title: "Emergency Insulin Supply",
-      recipient: "Maria S.",
-      amount: 25,
-      description: "Help Maria cover her insulin costs during unemployment",
-      icon: Heart,
-      status: "completed",
-      transactionId: `TXN-${Date.now().toString().slice(-8)}`,
-    };
-  } else {
-    return {
-      type: "medicine",
-      receiptId,
-      date: currentDate,
-      time: currentTime,
-      title: "Metformin 500mg",
-      genericName: "Metformin Hydrochloride",
-      quantity: "30 tablets",
-      bulkPrice: 28,
-      originalPrice: 45,
-      savings: 17,
-      estimatedDelivery: "3-5 business days",
-      trackingNumber: `TRK${Date.now().toString().slice(-10)}`,
-      icon: Pill,
-      status: "confirmed",
-      transactionId: `TXN-${Date.now().toString().slice(-8)}`,
-    };
-  }
-};
+type ReceiptMedicine = {
+  type: 'medicine'
+  receiptId: string
+  date: string
+  time: string
+  title: string
+  genericName?: string
+  quantity?: string
+  bulkPrice: number
+  originalPrice: number
+  savings: number
+  estimatedDelivery?: string
+  trackingNumber: string
+  icon: typeof Pill
+  status: string
+  transactionId: string
+}
 
 export default function ReceiptPage() {
   const params = useParams();
-  const receiptData = getReceiptData(params.id as string);
-  const IconComponent = receiptData.icon;
+  const searchParams = useSearchParams();
+  const [receiptData, setReceiptData] = useState<ReceiptGrant | ReceiptMedicine | null>(null)
+  const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(false);
   const receiptRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const build = async () => {
+      const idParam = String(params.id || '')
+      const receiptId = `RCP-${Date.now().toString().slice(-6)}`
+      const currentDate = new Date().toLocaleDateString()
+      const currentTime = new Date().toLocaleTimeString()
+      if (idParam.startsWith('grant-')) {
+        const pureId = idParam.replace('grant-', '')
+        const queryAmount = Number(searchParams.get('amount') || 0)
+        try {
+          const res = await fetch('/api/micro-grants')
+          const data = await res.json()
+          const grants = Array.isArray(data?.micro_grants) ? data.micro_grants : []
+          const g = grants.find((x: any) => String(x.id) === String(pureId))
+          const remaining = g ? Math.max(0, Number(g.amountNeeded || 0) - Number(g.amountRaised || 0)) : 0
+          const amount = queryAmount > 0 ? queryAmount : Math.max(1, remaining || 25)
+          setReceiptData({
+            type: 'grant',
+            receiptId,
+            date: currentDate,
+            time: currentTime,
+            title: g?.title || 'Grant Donation',
+            recipient: g?.requesterName || undefined,
+            amount,
+            description: g?.description || undefined,
+            icon: Heart,
+            status: 'completed',
+            transactionId: `TXN-${Date.now().toString().slice(-8)}`,
+          })
+        } catch {
+          setReceiptData({
+            type: 'grant',
+            receiptId,
+            date: currentDate,
+            time: currentTime,
+            title: 'Grant Donation',
+            amount: queryAmount || 25,
+            icon: Heart,
+            status: 'completed',
+            transactionId: `TXN-${Date.now().toString().slice(-8)}`,
+          } as ReceiptGrant)
+        }
+      } else {
+        const pureId = idParam.replace('metformin-', '')
+        try {
+          const res = await fetch(`/api/medicines/${pureId}`)
+          if (res.ok) {
+            const m = await res.json()
+            const base = 45
+            const discount = 17
+            const originalPrice = base
+            const savings = discount
+            const bulkPrice = Math.max(1, originalPrice - savings)
+            setReceiptData({
+              type: 'medicine',
+              receiptId,
+              date: currentDate,
+              time: currentTime,
+              title: m?.name || `Medicine #${pureId}`,
+              genericName: m?.generic_name || undefined,
+              quantity: '30 tablets',
+              bulkPrice,
+              originalPrice,
+              savings,
+              estimatedDelivery: '3-5 business days',
+              trackingNumber: `TRK${Date.now().toString().slice(-10)}`,
+              icon: Pill,
+              status: 'confirmed',
+              transactionId: `TXN-${Date.now().toString().slice(-8)}`,
+            })
+          } else {
+            setReceiptData({
+              type: 'medicine',
+              receiptId,
+              date: currentDate,
+              time: currentTime,
+              title: `Medicine #${pureId}`,
+              bulkPrice: 28,
+              originalPrice: 45,
+              savings: 17,
+              estimatedDelivery: '3-5 business days',
+              trackingNumber: `TRK${Date.now().toString().slice(-10)}`,
+              icon: Pill,
+              status: 'confirmed',
+              transactionId: `TXN-${Date.now().toString().slice(-8)}`,
+            } as ReceiptMedicine)
+          }
+        } catch {
+          setReceiptData({
+            type: 'medicine',
+            receiptId,
+            date: currentDate,
+            time: currentTime,
+            title: `Medicine #${pureId}`,
+            bulkPrice: 28,
+            originalPrice: 45,
+            savings: 17,
+            estimatedDelivery: '3-5 business days',
+            trackingNumber: `TRK${Date.now().toString().slice(-10)}`,
+            icon: Pill,
+            status: 'confirmed',
+            transactionId: `TXN-${Date.now().toString().slice(-8)}`,
+          } as ReceiptMedicine)
+        }
+      }
+      setLoading(false)
+    }
+    void build()
+  }, [params.id, searchParams])
 
   const generateFallbackPdf = () => {
     const pdf = new jsPDF("p", "mm", "a4");
@@ -137,6 +239,8 @@ export default function ReceiptPage() {
     pdf.text("Thank you for your support!", marginX, y);
     pdf.save("receipt.pdf");
   };
+
+  const IconComponent = useMemo(() => receiptData?.icon || CheckCircle, [receiptData])
 
   const handleDownload = async () => {
     if (downloading) return;
@@ -211,6 +315,19 @@ export default function ReceiptPage() {
     // In a real app, this would open a share dialog
     alert("Share functionality would be implemented here");
   };
+
+  if (loading || !receiptData) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-gray-900">Receipt</h1>
+            <p className="text-gray-600">Loading receipt...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
+  }
 
   return (
     <DashboardLayout>

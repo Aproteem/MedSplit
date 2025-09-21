@@ -78,9 +78,10 @@ export default function DonateMedsPage() {
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<Donation[]>([])
   const [showDonationForm, setShowDonationForm] = useState(false)
-  const [requestedMeds, setRequestedMeds] = useState<number[]>([])
+  // We derive requested state from backend fields (claimed_by/claim_status)
   const [medicines, setMedicines] = useState<Medicine[]>([])
   const [allDonations, setAllDonations] = useState<Donation[]>([])
+  const [activeTab, setActiveTab] = useState<string>("find")
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -119,6 +120,11 @@ export default function DonateMedsPage() {
   // Highlight claimed donations based on query param and add label
   const highlightId = Number(searchParams?.get("highlight") || 0)
 
+  const myDonations = useMemo(() => {
+    if (!user?.id) return [] as Donation[]
+    return allDonations.filter((d) => d.donor_id === user.id)
+  }, [allDonations, user?.id])
+
   const handleSearch = async (override?: string) => {
     const q = (override ?? searchQuery).trim()
     setLoading(true)
@@ -153,12 +159,35 @@ export default function DonateMedsPage() {
         const msg = await res.json().catch(() => ({}))
         throw new Error(msg?.error || "Failed to request donation")
       }
-      setRequestedMeds((prev) => [...prev, donationId])
+      // Optimistically mark donation as claimed by me with pending status
+      const updater = (list: Donation[]) => list.map((d) => d.id === donationId ? { ...d, claimed_by: user.id, claim_status: 'pending' } : d)
+      setAllDonations((prev) => updater(prev))
+      setResults((prev) => updater(prev))
       alert("Request sent for verification")
       // Backend creates 1+ notifications (claimer, maybe donor). Increment for claimer
       try { window.dispatchEvent(new CustomEvent("medsplit:notifications-updated", { detail: { delta: 1 } })) } catch {}
     } catch (e: any) {
       alert(e?.message || "Failed to request donation")
+    }
+  }
+
+  const cancelDonationRequest = async (donationId: number) => {
+    if (!user?.id) return
+    try {
+      const res = await fetch(api(`/api/donations/${donationId}/cancel-claim`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      })
+      if (!res.ok) {
+        const msg = await res.json().catch(() => ({}))
+        throw new Error(msg?.error || "Failed to cancel request")
+      }
+      const updater = (list: Donation[]) => list.map((d) => d.id === donationId ? { ...d, claimed_by: null, claim_status: null, claimed_at: null, claim_decided_at: null } as Donation : d)
+      setAllDonations((prev) => updater(prev))
+      setResults((prev) => updater(prev))
+    } catch (e: any) {
+      alert(e?.message || "Failed to cancel request")
     }
   }
 
@@ -179,7 +208,7 @@ export default function DonateMedsPage() {
           </Button>
         </div>
 
-        <Tabs defaultValue="find" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="find">Find Donations</TabsTrigger>
             <TabsTrigger value="my-donations">My Donations</TabsTrigger>
@@ -230,7 +259,8 @@ export default function DonateMedsPage() {
                   <p className="text-gray-600">{allDonations.length} donations available</p>
                 </div>
                 {allDonations.map((donation) => {
-                  const isRequested = requestedMeds.includes(donation.id)
+                  const isRequestedByMe = Boolean(user?.id && donation.claimed_by === user.id)
+                  const isPending = isRequestedByMe && (!donation.claim_status || donation.claim_status === 'pending')
                   const isClaimed = Boolean(donation.claimed_by)
                   const med = donation.medicine_name || medicineById.get(donation.medicine_id)?.name || `Medicine #${donation.medicine_id}`
                   return (
@@ -283,25 +313,35 @@ export default function DonateMedsPage() {
                               <p className="text-sm font-medium text-blue-800">Free Donation</p>
                               <p className="text-xs text-blue-600">Community supported</p>
                             </div>
-                            <Button
-                              onClick={() => requestDonation(donation.id)}
-                              disabled={isRequested || isClaimed}
-                              className="w-full"
-                              variant={isRequested || isClaimed ? "secondary" : "default"}
-                            >
-                              {isRequested ? (
-                                <>
-                                  <Heart className="h-4 w-4 mr-2" />
-                                  Request Sent
-                                </>
-                              ) : isClaimed ? (
-                                "Already Claimed"
-                              ) : (
-                                "Request Donation"
-                              )}
-                            </Button>
-                            {isRequested && (
-                              <p className="text-xs text-center text-gray-500">Waiting for doctor approval</p>
+                            {isPending ? (
+                              <Button
+                                onClick={() => cancelDonationRequest(donation.id)}
+                                className="w-full"
+                                variant="destructive"
+                              >
+                                Cancel Request
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => requestDonation(donation.id)}
+                                disabled={isClaimed}
+                                className="w-full"
+                                variant={isClaimed ? "secondary" : "default"}
+                              >
+                                {isRequestedByMe ? (
+                                  <>
+                                    <Heart className="h-4 w-4 mr-2" />
+                                    Request Sent
+                                  </>
+                                ) : isClaimed ? (
+                                  "Already Claimed"
+                                ) : (
+                                  "Request Donation"
+                                )}
+                              </Button>
+                            )}
+                            {isRequestedByMe && (
+                              <p className="text-xs text-center text-gray-500">{isPending ? 'Waiting for approval' : `Status: ${donation.claim_status || 'pending'}`}</p>
                             )}
                           </div>
                         </div>
@@ -320,7 +360,8 @@ export default function DonateMedsPage() {
                 </div>
                 {results.map((donation) => {
                   const med = donation.medicine_name || medicineById.get(donation.medicine_id)?.name
-                  const isRequested = requestedMeds.includes(donation.id)
+                  const isRequestedByMe = Boolean(user?.id && donation.claimed_by === user.id)
+                  const isPending = isRequestedByMe && (!donation.claim_status || donation.claim_status === 'pending')
                   const isClaimed = Boolean(donation.claimed_by)
                   return (
                     <Card key={donation.id} className="overflow-hidden">
@@ -358,25 +399,35 @@ export default function DonateMedsPage() {
                               <p className="text-sm font-medium text-blue-800">Free Donation</p>
                               <p className="text-xs text-blue-600">Community supported</p>
                             </div>
-                            <Button
-                              onClick={() => requestDonation(donation.id)}
-                              disabled={isRequested || isClaimed}
-                              className="w-full"
-                              variant={isRequested || isClaimed ? "secondary" : "default"}
-                            >
-                              {isRequested ? (
-                                <>
-                                  <Heart className="h-4 w-4 mr-2" />
-                                  Request Sent
-                                </>
-                              ) : isClaimed ? (
-                                "Already Claimed"
-                              ) : (
-                                "Request Donation"
-                              )}
-                            </Button>
-                            {isRequested && (
-                              <p className="text-xs text-center text-gray-500">Waiting for doctor approval</p>
+                            {isPending ? (
+                              <Button
+                                onClick={() => cancelDonationRequest(donation.id)}
+                                className="w-full"
+                                variant="destructive"
+                              >
+                                Cancel Request
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => requestDonation(donation.id)}
+                                disabled={isClaimed}
+                                className="w-full"
+                                variant={isClaimed ? "secondary" : "default"}
+                              >
+                                {isRequestedByMe ? (
+                                  <>
+                                    <Heart className="h-4 w-4 mr-2" />
+                                    Request Sent
+                                  </>
+                                ) : isClaimed ? (
+                                  "Already Claimed"
+                                ) : (
+                                  "Request Donation"
+                                )}
+                              </Button>
+                            )}
+                            {isRequestedByMe && (
+                              <p className="text-xs text-center text-gray-500">{isPending ? 'Waiting for approval' : `Status: ${donation.claim_status || 'pending'}`}</p>
                             )}
                           </div>
                         </div>
@@ -402,23 +453,87 @@ export default function DonateMedsPage() {
           </TabsContent>
 
           <TabsContent value="my-donations" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Donations</CardTitle>
-                <CardDescription>Medicines you've donated to the community</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Gift className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No donations yet</h3>
-                  <p className="text-gray-600 mb-4">Help your community by donating unused medications</p>
-                  <Button onClick={() => setShowDonationForm(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Donate Your First Medicine
-                  </Button>
+            {myDonations.length === 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Donations</CardTitle>
+                  <CardDescription>Medicines you've donated to the community</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <Gift className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No donations yet</h3>
+                    <p className="text-gray-600 mb-4">Help your community by donating unused medications</p>
+                    <Button onClick={() => setShowDonationForm(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Donate Your First Medicine
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">Your Donations</h2>
+                  <p className="text-gray-600">{myDonations.length} total</p>
                 </div>
-              </CardContent>
-            </Card>
+                {myDonations.map((donation) => {
+                  const med = donation.medicine_name || medicineById.get(donation.medicine_id)?.name || `Medicine #${donation.medicine_id}`
+                  return (
+                    <Card key={donation.id} className="overflow-hidden">
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                          <div className="lg:col-span-2 space-y-4">
+                            <div>
+                              <div className="flex items-center space-x-2 mb-2">
+                                <h3 className="text-xl font-semibold text-gray-900">{med}</h3>
+                                {donation.claimed_by && (
+                                  <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">Claimed</span>
+                                )}
+                              </div>
+                              {medicineById.get(donation.medicine_id)?.generic_name && (
+                                <p className="text-gray-600">{medicineById.get(donation.medicine_id)?.generic_name}</p>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div className="flex items-center space-x-2">
+                                <Gift className="h-4 w-4 text-gray-400" />
+                                <span>Quantity: {donation.quantity}</span>
+                              </div>
+                              {donation.created_at && (
+                                <div className="flex items-center space-x-2">
+                                  <Clock className="h-4 w-4 text-gray-400" />
+                                  <span>{new Date(donation.created_at).toLocaleString()}</span>
+                                </div>
+                              )}
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="h-4 w-4 text-gray-400" />
+                                <span>
+                                  Expires: {donation.medicine_expires_at ? new Date(donation.medicine_expires_at).toLocaleDateString() : "N/A"}
+                                </span>
+                              </div>
+                              {donation.claim_status && (
+                                <div className="flex items-center space-x-2">
+                                  <CheckCircle className="h-4 w-4 text-gray-400" />
+                                  <span>Status: {donation.claim_status}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <div className="bg-gray-50 p-4 rounded-lg text-center">
+                              <Gift className="h-8 w-8 text-gray-600 mx-auto mb-2" />
+                              <p className="text-sm font-medium text-gray-800">Your Donation</p>
+                              <p className="text-xs text-gray-600">Thank you for contributing</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
@@ -430,6 +545,8 @@ export default function DonateMedsPage() {
               void loadAllDonations()
               // if we were in search mode, refresh those results too
               if (searchActive) void handleSearch(searchQuery)
+              // Switch to My Donations to show the newly created donation
+              setActiveTab("my-donations")
             }}
           />
         )}

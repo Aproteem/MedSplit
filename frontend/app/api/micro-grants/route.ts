@@ -10,7 +10,12 @@ export async function GET() {
     const file = await fs.readFile(dataFilePath, "utf-8")
     const data = JSON.parse(file)
     const grants = Array.isArray(data.micro_grants) ? data.micro_grants : []
-    return NextResponse.json({ micro_grants: grants })
+    const sorted = [...grants].sort((a, b) => {
+      const at = a?.created_at ? new Date(a.created_at).getTime() : 0
+      const bt = b?.created_at ? new Date(b.created_at).getTime() : 0
+      return bt - at || (Number(b.id || 0) - Number(a.id || 0))
+    })
+    return NextResponse.json({ micro_grants: sorted })
   } catch (error) {
     return NextResponse.json({ micro_grants: [], error: "Failed to read data" }, { status: 500 })
   }
@@ -61,6 +66,7 @@ export async function POST(request: Request) {
       amountNeeded: amount,
       amountRaised: 0,
       timePosted: "just now",
+      created_at: new Date().toISOString(),
       supporters: 0,
       verified: false,
       urgent: false,
@@ -73,6 +79,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ micro_grant: newGrant }, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: "Failed to save grant" }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json()
+    const id = Number(body?.id || 0)
+    const addAmount = Number(body?.amount || 0)
+    if (!id || !addAmount || isNaN(addAmount)) {
+      return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+    }
+    const dataFilePath = path.resolve(process.cwd(), "..", "backend", "data.json")
+    const file = await fs.readFile(dataFilePath, "utf-8")
+    const data = JSON.parse(file)
+    const microGrants: any[] = Array.isArray(data.micro_grants) ? data.micro_grants : []
+    const idx = microGrants.findIndex((g) => Number(g.id) === id)
+    if (idx === -1) {
+      return NextResponse.json({ error: 'Grant not found' }, { status: 404 })
+    }
+    const current = Number(microGrants[idx].amountRaised || 0)
+    microGrants[idx].amountRaised = current + addAmount
+    // Optionally bump supporters count by 1 per donation
+    try {
+      const supporters = Number(microGrants[idx].supporters || 0)
+      microGrants[idx].supporters = supporters + 1
+    } catch {}
+    const updated = { ...data, micro_grants: microGrants }
+    await fs.writeFile(dataFilePath, JSON.stringify(updated, null, 2), 'utf-8')
+    return NextResponse.json({ micro_grant: microGrants[idx] })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to update grant' }, { status: 500 })
   }
 }
 
