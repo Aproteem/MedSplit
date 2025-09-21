@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Bell, Heart, ShoppingCart, Gift, DollarSign, User, Search, Plus } from "lucide-react"
 import Link from "next/link"
 import { DashboardLayout } from "@/components/dashboard-layout"
@@ -27,9 +26,9 @@ export default function DashboardPage() {
   ])
 
   const [recentSearches] = useState([
-    { name: "Metformin", lastSearched: "2 days ago", status: "approved" },
-    { name: "Lisinopril", lastSearched: "1 week ago", status: "pending" },
-    { name: "Atorvastatin", lastSearched: "2 weeks ago", status: "wishlisted" },
+    { name: "Metformin", lastSearched: "2 days ago" },
+    { name: "Lisinopril", lastSearched: "1 week ago" },
+    { name: "Atorvastatin", lastSearched: "2 weeks ago" },
   ])
 
   return (
@@ -151,18 +150,12 @@ export default function DashboardPage() {
                     <p className="font-medium">{search.name}</p>
                     <p className="text-sm text-gray-500">{search.lastSearched}</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge
-                      variant={
-                        search.status === "approved" ? "default" : search.status === "pending" ? "secondary" : "outline"
-                      }
-                    >
-                      {search.status}
-                    </Badge>
+                  <div className="flex items-center">
                     <Link href={`/buy-meds?med=${search.name.toLowerCase()}`}>
                       <Button size="sm" variant="ghost">
                         Search Again
                       </Button>
+                      
                     </Link>
                   </div>
                 </div>

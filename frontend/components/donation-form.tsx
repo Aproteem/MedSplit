@@ -10,12 +10,16 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X, Upload, Camera, FileText } from "lucide-react"
+import { api } from "@/lib/api"
+import { useCurrentUser } from "@/hooks/use-current-user"
 
 interface DonationFormProps {
   onClose: () => void
+  onSubmitted?: () => void
 }
 
-export function DonationForm({ onClose }: DonationFormProps) {
+export function DonationForm({ onClose, onSubmitted }: DonationFormProps) {
+  const { user } = useCurrentUser()
   const [formData, setFormData] = useState({
     medicineName: "",
     quantity: "",
@@ -28,14 +32,39 @@ export function DonationForm({ onClose }: DonationFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!user?.id) {
+      alert("Please log in to submit a donation.")
+      return
+    }
     setIsSubmitting(true)
-
-    // Simulate form submission and verification
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      const payload = {
+        donor_id: user.id,
+        medicine_name: formData.medicineName,
+        quantity: formData.quantity,
+        quantity_text: formData.quantity,
+        medicine_expires_at: formData.expiryDate || null,
+        condition: formData.condition,
+        doctor_name: formData.doctorName,
+        notes: formData.additionalNotes,
+      }
+      const res = await fetch(api(`/api/donations`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) {
+        const msg = await res.json().catch(() => ({}))
+        throw new Error(msg?.error || "Failed to submit donation")
+      }
       alert("Donation submitted! We're verifying your medication documentation.")
+      try { onSubmitted && onSubmitted() } catch {}
       onClose()
-    }, 2000)
+    } catch (err: any) {
+      alert(err?.message || "Failed to submit donation")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {

@@ -1,29 +1,61 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Heart, User, Stethoscope } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Heart, User, Stethoscope } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { api } from "@/lib/api";
 
 export default function SignupPage() {
-  const [userType, setUserType] = useState<"patient" | "provider">("patient")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [userType, setUserType] = useState<"patient" | "provider">("patient");
+  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+  const { setUser } = useCurrentUser();
 
   const handleSignup = async () => {
-    setIsLoading(true)
-    // Simulate Auth0 authentication
-    setTimeout(() => {
-      setIsLoading(false)
-      // For demo purposes, redirect to dashboard
-      router.push("/dashboard")
-    }, 1500)
-  }
+    setIsLoading(true);
+    try {
+      const role = userType === "provider" ? "doctor" : "patient";
+      const res = await fetch(api("/api/users"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role }),
+      });
+      if (!res.ok) throw new Error("failed");
+      // Optional: create a basic profile
+      const user = await res.json();
+      setUser({ id: user.id, email: user.email, role });
+      const [first_name, ...rest] = name.split(" ");
+      const last_name = rest.join(" ");
+      if (first_name) {
+        await fetch(api("/api/profiles"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user.id, first_name, last_name }),
+        });
+      }
+      router.push(role === "doctor" ? "/doctor" : "/dashboard");
+    } catch (_) {
+      alert("Signup failed. Please check your details and try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-4">
@@ -41,26 +73,50 @@ export default function SignupPage() {
         <Card>
           <CardHeader>
             <CardTitle>Create Account</CardTitle>
-            <CardDescription>Sign up to join the MedSplit community</CardDescription>
+            <CardDescription>
+              Sign up to join the MedSplit community
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="Enter your full name" />
+              <Input
+                id="name"
+                placeholder="Enter your full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="Enter your email" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="Create a password" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
 
             {/* User Type Selection */}
             <div className="space-y-3">
               <Label>I am a:</Label>
-              <RadioGroup value={userType} onValueChange={(value: "patient" | "provider") => setUserType(value)}>
+              <RadioGroup
+                value={userType}
+                onValueChange={(value: "patient" | "provider") =>
+                  setUserType(value)
+                }
+              >
                 <div className="flex items-center space-x-2 p-3 border rounded-lg">
                   <RadioGroupItem value="patient" id="patient" />
                   <User className="h-4 w-4" />
@@ -80,15 +136,26 @@ export default function SignupPage() {
 
             {userType === "provider" && (
               <div className="space-y-2">
-                <Label htmlFor="work-email">Work Email (for verification)</Label>
-                <Input id="work-email" type="email" placeholder="Enter your work email" />
+                <Label htmlFor="work-email">
+                  Work Email (for verification)
+                </Label>
+                <Input
+                  id="work-email"
+                  type="email"
+                  placeholder="Enter your work email"
+                />
                 <p className="text-sm text-gray-500">
-                  We'll verify your healthcare provider status using your work email
+                  We'll verify your healthcare provider status using your work
+                  email
                 </p>
               </div>
             )}
 
-            <Button className="w-full" onClick={handleSignup} disabled={isLoading}>
+            <Button
+              className="w-full"
+              onClick={handleSignup}
+              disabled={isLoading}
+            >
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
           </CardContent>
@@ -97,15 +164,19 @@ export default function SignupPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline font-medium">
+            <Link
+              href="/login"
+              className="text-primary hover:underline font-medium"
+            >
               Sign in here
             </Link>
           </p>
           <p className="text-xs text-gray-400 mt-2">
-            By creating an account, you agree to our Terms of Service and Privacy Policy
+            By creating an account, you agree to our Terms of Service and
+            Privacy Policy
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

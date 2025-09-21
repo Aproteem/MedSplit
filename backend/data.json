@@ -1,7 +1,846 @@
-[
-  {
-    "id": 1,
-    "text": "Aproteem",
-    "timestamp": "2025-09-20T02:19:44.984254"
+{
+  "users": [
+    {
+      "email": "obama@usa.gov",
+      "password": "00000",
+      "role": "patient",
+      "phone": "9455272626",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 5,
+      "created_at": "2025-09-20T17:43:10.349122"
+    },
+    {
+      "email": "nafi",
+      "password": "111111",
+      "role": "doctor",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 6,
+      "created_at": "2025-09-20T17:49:31.475901"
+    },
+    {
+      "email": "axm220330@utdallas.edu",
+      "password": "111111",
+      "role": "patient",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 7,
+      "created_at": "2025-09-20T18:57:32.941550"
+    },
+    {
+      "email": "jackripper@mail.com",
+      "password": "1",
+      "role": "doctor",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 8,
+      "created_at": "2025-09-20T20:22:19.451013"
+    }
+  ],
+  "medicines": [
+    {
+      "id": 1,
+      "name": "Amoxicillin 500mg",
+      "generic_name": "Amoxicillin",
+      "description": "Antibiotic",
+      "created_at": "2025-09-19T09:00:00.000Z",
+      "expire_at": "2026-06-01",
+      "current_demand": 12,
+      "required_demand": 20
+    },
+    {
+      "id": 2,
+      "name": "Ibuprofen 200mg",
+      "generic_name": "Ibuprofen",
+      "description": "NSAID pain reliever",
+      "created_at": "2025-09-19T09:10:00.000Z",
+      "expire_at": "2025-12-31",
+      "current_demand": 18,
+      "required_demand": 20
+    },
+    {
+      "id": 3,
+      "name": "Metformin 500mg",
+      "generic_name": "Metformin",
+      "description": "Type 2 diabetes medication",
+      "created_at": "2025-09-19T09:20:00.000Z",
+      "expire_at": "2027-03-15",
+      "current_demand": 9,
+      "required_demand": 25
+    },
+    {
+      "id": 4,
+      "name": "Insulin Glargine (Lantus) 100 units/mL",
+      "generic_name": "Insulin Glargine",
+      "description": "Long-acting insulin for diabetes",
+      "created_at": "2025-09-19T09:30:00.000Z",
+      "expire_at": "2026-02-10",
+      "current_demand": 15,
+      "required_demand": 30
+    },
+    {
+      "id": 5,
+      "name": "Napa Paracetamol 300mg",
+      "generic_name": "Napa Paracetamol",
+      "description": "Treatment for rare blood disorders (PNH, aHUS)",
+      "created_at": "2025-09-19T09:40:00.000Z",
+      "expire_at": "2026-09-01",
+      "current_demand": 7,
+      "required_demand": 15
+    },
+    {
+      "id": 6,
+      "name": "Trastuzumab (Herceptin) 150mg",
+      "generic_name": "Trastuzumab",
+      "description": "Breast cancer monoclonal antibody therapy",
+      "created_at": "2025-09-19T09:50:00.000Z",
+      "expire_at": "2026-08-20",
+      "current_demand": 12,
+      "required_demand": 22
+    },
+    {
+      "id": 7,
+      "name": "Pembrolizumab (Keytruda) 100mg",
+      "generic_name": "Pembrolizumab",
+      "description": "Immunotherapy for various cancers",
+      "created_at": "2025-09-19T10:00:00.000Z",
+      "expire_at": "2026-11-11",
+      "current_demand": 9,
+      "required_demand": 18
+    },
+    {
+      "id": 8,
+      "name": "Nivolumab (Opdivo) 100mg",
+      "generic_name": "Nivolumab",
+      "description": "Checkpoint inhibitor for cancer treatment",
+      "created_at": "2025-09-19T10:10:00.000Z",
+      "expire_at": "2026-10-15",
+      "current_demand": 10,
+      "required_demand": 20
+    },
+    {
+      "id": 9,
+      "name": "Lenalidomide (Revlimid) 25mg",
+      "generic_name": "Lenalidomide",
+      "description": "Blood cancer and multiple myeloma treatment",
+      "created_at": "2025-09-19T10:20:00.000Z",
+      "expire_at": "2026-07-20",
+      "current_demand": 18,
+      "required_demand": 25
+    },
+    {
+      "id": 10,
+      "name": "Adalimumab (Humira) 40mg",
+      "generic_name": "Adalimumab",
+      "description": "Autoimmune disease therapy (RA, Crohn\u2019s, psoriasis)",
+      "created_at": "2025-09-19T10:30:00.000Z",
+      "expire_at": "2026-05-05",
+      "current_demand": 20,
+      "required_demand": 30
+    },
+    {
+      "id": 11,
+      "name": "Etanercept (Enbrel) 50mg",
+      "generic_name": "Etanercept",
+      "description": "Treatment for rheumatoid arthritis, psoriasis",
+      "created_at": "2025-09-19T10:40:00.000Z",
+      "expire_at": "2026-03-01",
+      "current_demand": 11,
+      "required_demand": 19
+    },
+    {
+      "id": 12,
+      "name": "Rituximab (Rituxan) 500mg",
+      "generic_name": "Rituximab",
+      "description": "Cancer and autoimmune monoclonal antibody",
+      "created_at": "2025-09-19T10:50:00.000Z",
+      "expire_at": "2026-12-31",
+      "current_demand": 13,
+      "required_demand": 24
+    },
+    {
+      "id": 13,
+      "name": "Imatinib (Gleevec) 400mg",
+      "generic_name": "Imatinib",
+      "description": "Chronic myeloid leukemia treatment",
+      "created_at": "2025-09-19T11:00:00.000Z",
+      "expire_at": "2026-06-15",
+      "current_demand": 7,
+      "required_demand": 14
+    },
+    {
+      "id": 14,
+      "name": "Abiraterone (Zytiga) 250mg",
+      "generic_name": "Abiraterone",
+      "description": "Prostate cancer treatment",
+      "created_at": "2025-09-19T11:10:00.000Z",
+      "expire_at": "2026-09-30",
+      "current_demand": 12,
+      "required_demand": 20
+    },
+    {
+      "id": 15,
+      "name": "Daratumumab (Darzalex) 100mg",
+      "generic_name": "Daratumumab",
+      "description": "Multiple myeloma treatment",
+      "created_at": "2025-09-19T11:20:00.000Z",
+      "expire_at": "2026-07-01",
+      "current_demand": 5,
+      "required_demand": 15
+    },
+    {
+      "id": 16,
+      "name": "Crizotinib (Xalkori) 250mg",
+      "generic_name": "Crizotinib",
+      "description": "Lung cancer targeted therapy",
+      "created_at": "2025-09-19T11:30:00.000Z",
+      "expire_at": "2026-08-18",
+      "current_demand": 8,
+      "required_demand": 16
+    },
+    {
+      "id": 17,
+      "name": "Sofosbuvir (Sovaldi) 400mg",
+      "generic_name": "Sofosbuvir",
+      "description": "Antiviral for Hepatitis C",
+      "created_at": "2025-09-19T11:40:00.000Z",
+      "expire_at": "2026-05-11",
+      "current_demand": 18,
+      "required_demand": 28
+    },
+    {
+      "id": 18,
+      "name": "Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg",
+      "generic_name": "Ledipasvir + Sofosbuvir",
+      "description": "Combination Hepatitis C treatment",
+      "created_at": "2025-09-19T11:50:00.000Z",
+      "expire_at": "2026-10-01",
+      "current_demand": 9,
+      "required_demand": 19
+    },
+    {
+      "id": 19,
+      "name": "Tenofovir/Emtricitabine (Truvada) 200mg/300mg",
+      "generic_name": "Tenofovir + Emtricitabine",
+      "description": "HIV prevention (PrEP) and treatment",
+      "created_at": "2025-09-19T12:00:00.000Z",
+      "expire_at": "2027-01-01",
+      "current_demand": 22,
+      "required_demand": 35
+    },
+    {
+      "id": 20,
+      "name": "Dolutegravir (Tivicay) 50mg",
+      "generic_name": "Dolutegravir",
+      "description": "HIV integrase inhibitor",
+      "created_at": "2025-09-19T12:10:00.000Z",
+      "expire_at": "2026-09-15",
+      "current_demand": 10,
+      "required_demand": 18
+    },
+    {
+      "id": 21,
+      "name": "Ertapenem (Invanz) 1g",
+      "generic_name": "Ertapenem",
+      "description": "Carbapenem antibiotic",
+      "created_at": "2025-09-19T12:20:00.000Z",
+      "expire_at": "2026-04-30",
+      "current_demand": 7,
+      "required_demand": 13
+    },
+    {
+      "id": 22,
+      "name": "Linezolid (Zyvox) 600mg",
+      "generic_name": "Linezolid",
+      "description": "Last-resort antibiotic for resistant infections",
+      "created_at": "2025-09-19T12:30:00.000Z",
+      "expire_at": "2026-12-15",
+      "current_demand": 5,
+      "required_demand": 12
+    },
+    {
+      "id": 23,
+      "name": "Vancomycin 1g IV",
+      "generic_name": "Vancomycin",
+      "description": "Powerful antibiotic for MRSA infections",
+      "created_at": "2025-09-19T12:40:00.000Z",
+      "expire_at": "2026-11-20",
+      "current_demand": 14,
+      "required_demand": 22
+    },
+    {
+      "id": 24,
+      "name": "Palbociclib (Ibrance) 125mg",
+      "generic_name": "Palbociclib",
+      "description": "Breast cancer targeted therapy",
+      "created_at": "2025-09-19T12:50:00.000Z",
+      "expire_at": "2026-06-30",
+      "current_demand": 6,
+      "required_demand": 14
+    },
+    {
+      "id": 25,
+      "name": "Ocrelizumab (Ocrevus) 300mg",
+      "generic_name": "Ocrelizumab",
+      "description": "Multiple sclerosis monoclonal antibody",
+      "created_at": "2025-09-19T13:00:00.000Z",
+      "expire_at": "2026-09-12",
+      "current_demand": 8,
+      "required_demand": 16
+    },
+    {
+      "id": 26,
+      "name": "Spinraza (Nusinersen) 12mg",
+      "generic_name": "Nusinersen",
+      "description": "Spinal muscular atrophy therapy",
+      "created_at": "2025-09-19T13:10:00.000Z",
+      "expire_at": "2026-12-01",
+      "current_demand": 4,
+      "required_demand": 10
+    },
+    {
+      "id": 27,
+      "name": "Ertugliflozin (Steglatro) 15mg",
+      "generic_name": "Ertugliflozin",
+      "description": "Type 2 diabetes SGLT2 inhibitor",
+      "created_at": "2025-09-19T13:20:00.000Z",
+      "expire_at": "2026-05-25",
+      "current_demand": 9,
+      "required_demand": 18
+    },
+    {
+      "id": 28,
+      "name": "Secukinumab (Cosentyx) 150mg",
+      "generic_name": "Secukinumab",
+      "description": "Psoriasis and ankylosing spondylitis treatment",
+      "created_at": "2025-09-19T13:30:00.000Z",
+      "expire_at": "2026-07-15",
+      "current_demand": 11,
+      "required_demand": 20
+    },
+    {
+      "id": 29,
+      "name": "Apixaban (Eliquis) 5mg",
+      "generic_name": "Apixaban",
+      "description": "Blood thinner for stroke prevention",
+      "created_at": "2025-09-19T13:40:00.000Z",
+      "expire_at": "2026-10-10",
+      "current_demand": 18,
+      "required_demand": 30
+    },
+    {
+      "id": 30,
+      "name": "Rivaroxaban (Xarelto) 20mg",
+      "generic_name": "Rivaroxaban",
+      "description": "Oral anticoagulant for clot prevention",
+      "created_at": "2025-09-19T13:50:00.000Z",
+      "expire_at": "2026-12-25",
+      "current_demand": 16,
+      "required_demand": 28
+    }
+  ],
+  "wishlists": [
+    {
+      "user_id": 1,
+      "medicine_id": 1,
+      "quantity": 1,
+      "approved": true,
+      "id": 1,
+      "created_at": "2025-09-20T17:10:15.203972"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 2,
+      "quantity": 1,
+      "approved": true,
+      "id": 2,
+      "created_at": "2025-09-20T17:10:17.065398"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 3,
+      "quantity": 1,
+      "approved": true,
+      "id": 3,
+      "created_at": "2025-09-20T17:10:20.116906"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 4,
+      "quantity": 1,
+      "approved": true,
+      "id": 4,
+      "created_at": "2025-09-20T17:10:22.133877"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 1,
+      "quantity": 1,
+      "approved": true,
+      "id": 5,
+      "created_at": "2025-09-20T17:11:53.795007"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 2,
+      "quantity": 1,
+      "approved": true,
+      "id": 6,
+      "created_at": "2025-09-20T17:12:00.687377"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 1,
+      "quantity": 1,
+      "approved": false,
+      "id": 7,
+      "created_at": "2025-09-20T17:15:11.066076",
+      "rejected_at": "2025-09-20T20:22:34.268227"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 9,
+      "quantity": 1,
+      "approved": false,
+      "id": 8,
+      "created_at": "2025-09-20T17:46:42.908775",
+      "rejected_at": "2025-09-20T20:22:35.074826"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 9,
+      "quantity": 1,
+      "approved": false,
+      "id": 9,
+      "created_at": "2025-09-20T17:46:57.140337",
+      "rejected_at": "2025-09-20T20:22:35.903625"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 9,
+      "quantity": 1,
+      "approved": false,
+      "id": 10,
+      "created_at": "2025-09-20T17:47:01.828596",
+      "rejected_at": "2025-09-20T20:22:36.706500"
+    },
+    {
+      "user_id": 1,
+      "medicine_id": 1,
+      "quantity": 1,
+      "approved": false,
+      "id": 11,
+      "created_at": "2025-09-20T17:47:16.669402",
+      "rejected_at": "2025-09-20T20:22:37.515913"
+    },
+    {
+      "user_id": 5,
+      "medicine_id": 5,
+      "quantity": 1,
+      "approved": true,
+      "id": 12,
+      "created_at": "2025-09-20T20:23:28.658673"
+    }
+  ],
+  "donations": [
+    {
+      "id": 1,
+      "donor_id": 2,
+      "medicine_name": "Amoxicillin 500mg",
+      "quantity": 20,
+      "created_at": "2025-09-20T10:15:00.000Z",
+      "medicine_expires_at": "2026-06-01",
+      "claimed_by": 1,
+      "claimed_at": "2025-09-20T17:12:13.490862",
+      "claim_status": "rejected",
+      "claim_decided_at": "2025-09-20T20:22:38.933829"
+    },
+    {
+      "id": 2,
+      "donor_id": 2,
+      "medicine_name": "Ibuprofen 200mg",
+      "quantity": 40,
+      "created_at": "2025-09-20T11:00:00.000Z",
+      "medicine_expires_at": "2025-12-31"
+    },
+    {
+      "id": 3,
+      "donor_id": 3,
+      "medicine_name": "Metformin 500mg",
+      "quantity": 5,
+      "created_at": "2025-09-21T09:00:00.000Z",
+      "medicine_expires_at": "2026-02-10"
+    },
+    {
+      "id": 4,
+      "donor_id": 4,
+      "medicine_name": "Atorvastatin 20mg",
+      "quantity": 2,
+      "created_at": "2025-09-21T09:30:00.000Z",
+      "medicine_expires_at": "2026-09-01"
+    },
+    {
+      "id": 5,
+      "donor_id": 2,
+      "medicine_name": "Omeprazole 40mg",
+      "quantity": 3,
+      "created_at": "2025-09-21T10:15:00.000Z",
+      "medicine_expires_at": "2026-08-20"
+    },
+    {
+      "id": 6,
+      "donor_id": 3,
+      "medicine_name": "Losartan 50mg",
+      "quantity": 10,
+      "created_at": "2025-09-21T11:00:00.000Z",
+      "medicine_expires_at": "2026-11-11"
+    },
+    {
+      "id": 7,
+      "donor_id": 4,
+      "medicine_name": "Levothyroxine 75mcg",
+      "quantity": 6,
+      "created_at": "2025-09-21T12:20:00.000Z",
+      "medicine_expires_at": "2026-07-20"
+    },
+    {
+      "id": 8,
+      "donor_id": 2,
+      "medicine_name": "Clopidogrel 75mg",
+      "quantity": 8,
+      "created_at": "2025-09-21T13:45:00.000Z",
+      "medicine_expires_at": "2026-05-05"
+    },
+    {
+      "id": 9,
+      "donor_id": 3,
+      "medicine_name": "Montelukast 10mg",
+      "quantity": 4,
+      "created_at": "2025-09-21T15:00:00.000Z",
+      "medicine_expires_at": "2026-12-31"
+    },
+    {
+      "id": 10,
+      "donor_id": 4,
+      "medicine_name": "Sertraline 50mg",
+      "quantity": 12,
+      "created_at": "2025-09-21T16:10:00.000Z",
+      "medicine_expires_at": "2026-05-11"
+    },
+    {
+      "id": 11,
+      "donor_id": 2,
+      "medicine_name": "Cetirizine 10mg",
+      "quantity": 15,
+      "created_at": "2025-09-21T17:20:00.000Z",
+      "medicine_expires_at": "2027-01-01"
+    },
+    {
+      "id": 12,
+      "donor_id": 3,
+      "medicine_name": "Azithromycin 250mg",
+      "quantity": 7,
+      "created_at": "2025-09-21T18:40:00.000Z",
+      "medicine_expires_at": "2026-10-10"
+    },
+    {
+      "id": 13,
+      "donor_id": 2,
+      "medicine_name": "Paracetamol 500mg",
+      "quantity": 12,
+      "medicine_expires_at": "2026-02-24",
+      "created_at": "2025-09-20T17:48:57.868131"
+    },
+    {
+      "donor_id": 5,
+      "medicine_id": null,
+      "medicine_name": "Dadar dhon",
+      "quantity": "1",
+      "quantity_text": "1",
+      "medicine_expires_at": "2025-09-20",
+      "condition": "refrigerated",
+      "doctor_name": "jason",
+      "notes": "",
+      "id": 14,
+      "created_at": "2025-09-20T20:24:03.995587",
+      "claimed_by": 5,
+      "claimed_at": "2025-09-20T20:24:16.356645",
+      "claim_status": "approved",
+      "claim_decided_at": "2025-09-20T20:24:55.700716"
+    }
+  ],
+  "grants": [
+    {
+      "requestor_id": 1,
+      "title": "asdfasdf",
+      "description": "asdfasdf",
+      "id": 1,
+      "created_at": "2025-09-20T17:03:18.864976"
+    }
+  ],
+  "profiles": [
+    {
+      "first_name": "Sifat",
+      "last_name": "Islam",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 1,
+      "id": 1,
+      "created_at": "2025-09-20T17:01:29.486777"
+    },
+    {
+      "first_name": "Aproteem",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 2,
+      "id": 2,
+      "created_at": "2025-09-20T17:07:25.245543"
+    },
+    {
+      "first_name": "Sifat",
+      "last_name": "Islam",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 3,
+      "id": 3,
+      "created_at": "2025-09-20T17:08:00.304197"
+    },
+    {
+      "first_name": "Aproteem",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 4,
+      "id": 4,
+      "created_at": "2025-09-20T17:08:55.956853"
+    },
+    {
+      "first_name": "Osama",
+      "last_name": "Bin Laden",
+      "phone": "9455272626",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 5,
+      "id": 5,
+      "created_at": "2025-09-20T17:43:10.380792"
+    },
+    {
+      "first_name": "nafi",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 6,
+      "id": 6,
+      "created_at": "2025-09-20T17:49:31.508644"
+    },
+    {
+      "first_name": "Aproteem",
+      "last_name": "Majumder",
+      "phone": "9455275215",
+      "address": "2400 WATERVIEW PKWY APT 0927",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 7,
+      "id": 7,
+      "created_at": "2025-09-20T18:57:33.254583"
+    },
+    {
+      "first_name": "Jack",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 8,
+      "id": 8,
+      "created_at": "2025-09-20T20:22:19.763706"
+    }
+  ],
+  "counters": [],
+  "notifications": [
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
+      "read": false,
+      "id": 14,
+      "created_at": "2025-09-20T17:15:11.067802"
+    },
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Lenalidomide (Revlimid) 25mg was added to wishlist.",
+      "read": false,
+      "id": 15,
+      "created_at": "2025-09-20T17:46:42.948164"
+    },
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Lenalidomide (Revlimid) 25mg was added to wishlist.",
+      "read": false,
+      "id": 16,
+      "created_at": "2025-09-20T17:46:57.196342"
+    },
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Lenalidomide (Revlimid) 25mg was added to wishlist.",
+      "read": false,
+      "id": 17,
+      "created_at": "2025-09-20T17:47:01.864236"
+    },
+    {
+      "user_id": 1,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Amoxicillin 500mg was added to wishlist.",
+      "read": false,
+      "id": 18,
+      "created_at": "2025-09-20T17:47:16.709548"
+    },
+    {
+      "user_id": 1,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 19,
+      "created_at": "2025-09-20T20:22:34.290326"
+    },
+    {
+      "user_id": 1,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 20,
+      "created_at": "2025-09-20T20:22:35.089203"
+    },
+    {
+      "user_id": 1,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 21,
+      "created_at": "2025-09-20T20:22:35.917764"
+    },
+    {
+      "user_id": 1,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 22,
+      "created_at": "2025-09-20T20:22:36.719591"
+    },
+    {
+      "user_id": 1,
+      "type": "approval",
+      "title": "Request Rejected",
+      "message": "Your medicine request was not approved at this time.",
+      "id": 23,
+      "created_at": "2025-09-20T20:22:37.528999"
+    },
+    {
+      "user_id": 1,
+      "type": "donation",
+      "title": "Donation Rejected",
+      "message": "Your claim for donation #1 was rejected.",
+      "id": 24,
+      "created_at": "2025-09-20T20:22:38.948497"
+    },
+    {
+      "user_id": 5,
+      "type": "wishlist",
+      "title": "Added to Wishlist",
+      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
+      "read": false,
+      "id": 25,
+      "created_at": "2025-09-20T20:23:28.689670"
+    },
+    {
+      "user_id": 5,
+      "type": "donation",
+      "title": "Donation Claimed",
+      "message": "You claimed donation #14.",
+      "id": 26,
+      "created_at": "2025-09-20T20:24:16.378740"
+    },
+    {
+      "user_id": 5,
+      "type": "donation",
+      "title": "Donation Approved",
+      "message": "Your claim for donation #14 was approved.",
+      "action_url": "/donate-meds?highlight=14",
+      "id": 27,
+      "created_at": "2025-09-20T20:24:55.715910"
+    },
+    {
+      "user_id": 5,
+      "type": "approval",
+      "title": "Request Approved",
+      "message": "Your medicine request has been approved.",
+      "action_url": "/checkout/5",
+      "id": 28,
+      "created_at": "2025-09-20T20:24:57.228238"
+    }
+  ],
+  "transactions": [],
+  "demoData": [],
+  "meta": {
+    "counters": {
+      "users": 8,
+      "medicines": 30,
+      "wishlists": 12,
+      "donations": 14,
+      "grants": 1,
+      "profiles": 8,
+      "counters": 0,
+      "demoData": 0,
+      "notifications": 28,
+      "transactions": 0
+    }
   }
-]
+}

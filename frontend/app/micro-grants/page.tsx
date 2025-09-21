@@ -176,12 +176,6 @@ export default function MicroGrantsPage() {
                           <div>
                             <div className="flex items-center space-x-2 mb-2">
                               <h3 className="text-xl font-semibold text-gray-900">{grant.title}</h3>
-                              {grant.verified && (
-                                <Badge variant="default" className="bg-green-100 text-green-800">
-                                  Verified
-                                </Badge>
-                              )}
-                              {grant.urgent && <Badge variant="destructive">Urgent</Badge>}
                             </div>
                             <p className="text-gray-600">Requested by {grant.requesterName}</p>
                           </div>
