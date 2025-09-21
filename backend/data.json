@@ -149,7 +149,7 @@
       "description": "Blood cancer and multiple myeloma treatment",
       "created_at": "2025-09-19T10:20:00.000Z",
       "expire_at": "2026-07-20",
-      "current_demand": 18,
+      "current_demand": 19,
       "required_demand": 25
     },
     {
@@ -447,6 +447,14 @@
       "approved": false,
       "id": 29,
       "created_at": "2025-09-21T02:00:45.210160"
+    },
+    {
+      "user_id": 9,
+      "medicine_id": 9,
+      "quantity": 1,
+      "approved": false,
+      "id": 30,
+      "created_at": "2025-09-21T04:37:00.329017"
     }
   ],
   "donations": [
@@ -795,7 +803,8 @@
       "allergies": [],
       "user_id": 9,
       "id": 9,
-      "created_at": "2025-09-20T21:20:08.001075"
+      "created_at": "2025-09-20T21:20:08.001075",
+      "avatar_url": "/profile-pics/9-1758447508714.png"
     },
     {
       "first_name": "arnab",
@@ -840,59 +849,6 @@
     }
   ],
   "notifications": [
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
-      "read": false,
-      "id": 39,
-      "created_at": "2025-09-20T21:50:46.894391"
-    },
-    {
-      "user_id": 9,
-      "type": "donation",
-      "title": "Donation Claimed",
-      "message": "You claimed donation #3.",
-      "id": 40,
-      "created_at": "2025-09-20T21:51:22.243269"
-    },
-    {
-      "user_id": 9,
-      "type": "donation",
-      "title": "Donation Approved",
-      "message": "Your claim for donation #3 was approved.",
-      "action_url": "/donate-meds?highlight=3",
-      "id": 42,
-      "created_at": "2025-09-20T21:54:33.844006",
-      "read": true
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
-      "read": true,
-      "id": 43,
-      "created_at": "2025-09-20T22:01:49.905747"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Ibuprofen 200mg was added to wishlist.",
-      "read": true,
-      "id": 45,
-      "created_at": "2025-09-20T22:16:24.070522"
-    },
-    {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your medicine request was not approved at this time.",
-      "id": 48,
-      "created_at": "2025-09-20T22:40:26.509619"
-    },
     {
       "user_id": 5,
       "type": "donation",
@@ -1003,84 +959,6 @@
       "read": true
     },
     {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Trastuzumab (Herceptin) 150mg was added to wishlist.",
-      "read": true,
-      "id": 67,
-      "created_at": "2025-09-21T00:41:56.435796"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg was added to wishlist.",
-      "read": false,
-      "id": 68,
-      "created_at": "2025-09-21T00:43:07.417728"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Pembrolizumab (Keytruda) 100mg was added to wishlist.",
-      "read": true,
-      "id": 69,
-      "created_at": "2025-09-21T01:53:23.921649"
-    },
-    {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Approved",
-      "message": "Your request for Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg has been approved.",
-      "action_url": "/checkout/18",
-      "id": 70,
-      "created_at": "2025-09-21T01:53:49.423254"
-    },
-    {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Rejected",
-      "message": "Your request for Pembrolizumab (Keytruda) 100mg was not approved at this time.",
-      "id": 71,
-      "created_at": "2025-09-21T01:53:50.031596"
-    },
-    {
-      "user_id": 9,
-      "type": "approval",
-      "title": "Request Approved",
-      "message": "Your request for Trastuzumab (Herceptin) 150mg has been approved.",
-      "action_url": "/checkout/6",
-      "id": 72,
-      "created_at": "2025-09-21T01:53:51.104731"
-    },
-    {
-      "user_id": 9,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Ledipasvir/Sofosbuvir (Harvoni) 90mg/400mg was added to wishlist.",
-      "read": false,
-      "id": 73,
-      "created_at": "2025-09-21T02:00:45.213919"
-    },
-    {
-      "user_id": 9,
-      "type": "donation",
-      "title": "Request Submitted",
-      "message": "You requested 9/11.",
-      "id": 74,
-      "created_at": "2025-09-21T02:02:22.842277"
-    },
-    {
-      "user_id": 9,
-      "type": "donation",
-      "title": "Request Rejected",
-      "message": "Your request for 9/11 was rejected.",
-      "id": 75,
-      "created_at": "2025-09-21T02:03:47.439579"
-    },
-    {
       "user_id": 10,
       "type": "donation",
       "title": "Request Submitted",
@@ -1105,13 +983,13 @@
     "counters": {
       "users": 10,
       "medicines": 30,
-      "wishlists": 29,
+      "wishlists": 30,
       "donations": 20,
       "grants": 1,
       "profiles": 10,
       "counters": 3,
       "demoData": 0,
-      "notifications": 77,
+      "notifications": 78,
       "transactions": 0
     }
   },
