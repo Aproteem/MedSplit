@@ -49,7 +49,7 @@
       "description": "Antibiotic",
       "created_at": "2025-09-19T09:00:00.000Z",
       "expire_at": "2026-06-01",
-      "current_demand": 12,
+      "current_demand": 13,
       "required_demand": 20
     },
     {
@@ -79,7 +79,7 @@
       "description": "Long-acting insulin for diabetes",
       "created_at": "2025-09-19T09:30:00.000Z",
       "expire_at": "2026-02-10",
-      "current_demand": 15,
+      "current_demand": 16,
       "required_demand": 30
     },
     {
@@ -109,7 +109,7 @@
       "description": "Immunotherapy for various cancers",
       "created_at": "2025-09-19T10:00:00.000Z",
       "expire_at": "2026-11-11",
-      "current_demand": 9,
+      "current_demand": 10,
       "required_demand": 18
     },
     {
@@ -136,7 +136,7 @@
       "id": 10,
       "name": "Adalimumab (Humira) 40mg",
       "generic_name": "Adalimumab",
-      "description": "Autoimmune disease therapy (RA, Crohn\u2019s, psoriasis)",
+      "description": "Autoimmune disease therapy (RA, Crohn\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2s, psoriasis)",
       "created_at": "2025-09-19T10:30:00.000Z",
       "expire_at": "2026-05-05",
       "current_demand": 20,
@@ -179,7 +179,7 @@
       "description": "Prostate cancer treatment",
       "created_at": "2025-09-19T11:10:00.000Z",
       "expire_at": "2026-09-30",
-      "current_demand": 12,
+      "current_demand": 13,
       "required_demand": 20
     },
     {
@@ -444,6 +444,38 @@
       "approved": true,
       "id": 12,
       "created_at": "2025-09-20T20:23:28.658673"
+    },
+    {
+      "user_id": 5,
+      "medicine_id": 4,
+      "quantity": 1,
+      "approved": true,
+      "id": 13,
+      "created_at": "2025-09-20T20:56:50.900205"
+    },
+    {
+      "user_id": 5,
+      "medicine_id": 1,
+      "quantity": 1,
+      "approved": true,
+      "id": 14,
+      "created_at": "2025-09-20T21:13:48.193743"
+    },
+    {
+      "user_id": 5,
+      "medicine_id": 7,
+      "quantity": 1,
+      "approved": true,
+      "id": 15,
+      "created_at": "2025-09-20T21:18:25.606046"
+    },
+    {
+      "user_id": 5,
+      "medicine_id": 14,
+      "quantity": 1,
+      "approved": true,
+      "id": 16,
+      "created_at": "2025-09-20T21:18:29.048316"
     }
   ],
   "donations": [
@@ -465,7 +497,11 @@
       "medicine_name": "Ibuprofen 200mg",
       "quantity": 40,
       "created_at": "2025-09-20T11:00:00.000Z",
-      "medicine_expires_at": "2025-12-31"
+      "medicine_expires_at": "2025-12-31",
+      "claimed_by": 5,
+      "claimed_at": "2025-09-20T21:14:11.313077",
+      "claim_status": "approved",
+      "claim_decided_at": "2025-09-20T21:21:16.675316"
     },
     {
       "id": 3,
@@ -481,7 +517,11 @@
       "medicine_name": "Atorvastatin 20mg",
       "quantity": 2,
       "created_at": "2025-09-21T09:30:00.000Z",
-      "medicine_expires_at": "2026-09-01"
+      "medicine_expires_at": "2026-09-01",
+      "claimed_by": 5,
+      "claimed_at": "2025-09-20T20:57:24.548552",
+      "claim_status": "approved",
+      "claim_decided_at": "2025-09-20T20:57:45.969362"
     },
     {
       "id": 5,
@@ -580,6 +620,119 @@
       "description": "asdfasdf",
       "id": 1,
       "created_at": "2025-09-20T17:03:18.864976"
+    }
+  ],
+  "micro_grants": [
+    {
+      "id": 9,
+      "requesterName": "Osama Bin Laden",
+      "title": "fgsfsdsdf",
+      "description": "12323 2",
+      "amountNeeded": 10,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 5
+    },
+    {
+      "id": 8,
+      "requesterName": "Osama Bin Laden",
+      "title": "belly surgery",
+      "description": "12",
+      "amountNeeded": 69,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 5
+    },
+    {
+      "id": 7,
+      "requesterName": "Osama Bin Laden",
+      "title": "my cancer medicine",
+      "description": "need this badly",
+      "amountNeeded": 111,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false,
+      "requestor_id": 5
+    },
+    {
+      "id": 6,
+      "requesterName": "Anonymous",
+      "title": "Pay a sex worker",
+      "description": "You know man, wanted to fuck she took my money and ducked",
+      "amountNeeded": 200,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false
+    },
+    {
+      "id": 5,
+      "requesterName": "Anonymous",
+      "title": "exampe",
+      "description": "11111",
+      "amountNeeded": 100,
+      "amountRaised": 0,
+      "timePosted": "just now",
+      "supporters": 0,
+      "verified": false,
+      "urgent": false
+    },
+    {
+      "id": 1,
+      "requesterName": "Maria S.",
+      "title": "Emergency Insulin Supply",
+      "description": "Lost my job last month and can't afford my insulin. Need help covering the cost until I find new employment. Have been diabetic for 15 years and this medication is critical for my survival.",
+      "amountNeeded": 180,
+      "amountRaised": 120,
+      "timePosted": "2 days ago",
+      "supporters": 8,
+      "verified": true,
+      "urgent": true
+    },
+    {
+      "id": 2,
+      "requesterName": "James K.",
+      "title": "Heart Medication Support",
+      "description": "Recently diagnosed with heart condition. Insurance doesn't cover the full cost of my new medication. Working two jobs but still struggling to make ends meet.",
+      "amountNeeded": 150,
+      "amountRaised": 45,
+      "timePosted": "5 days ago",
+      "supporters": 3,
+      "verified": true,
+      "urgent": false
+    },
+    {
+      "id": 3,
+      "requesterName": "Sarah M.",
+      "title": "Cancer Treatment Assistance",
+      "description": "Undergoing chemotherapy and need help with medication costs. The side effects make it hard to work full time. Any support would mean the world to me and my family.",
+      "amountNeeded": 200,
+      "amountRaised": 85,
+      "timePosted": "1 week ago",
+      "supporters": 6,
+      "verified": true,
+      "urgent": false
+    },
+    {
+      "id": 4,
+      "requesterName": "Robert L.",
+      "title": "Diabetes Management",
+      "description": "Senior on fixed income struggling with rising medication costs. Need help covering my monthly diabetes supplies and medication. Have been managing this condition for over 20 years.",
+      "amountNeeded": 95,
+      "amountRaised": 25,
+      "timePosted": "3 days ago",
+      "supporters": 2,
+      "verified": false,
+      "urgent": false
     }
   ],
   "profiles": [
@@ -790,41 +943,6 @@
       "message": "Your claim for donation #1 was rejected.",
       "id": 24,
       "created_at": "2025-09-20T20:22:38.948497"
-    },
-    {
-      "user_id": 5,
-      "type": "wishlist",
-      "title": "Added to Wishlist",
-      "message": "Your request for Napa Paracetamol 300mg was added to wishlist.",
-      "read": false,
-      "id": 25,
-      "created_at": "2025-09-20T20:23:28.689670"
-    },
-    {
-      "user_id": 5,
-      "type": "donation",
-      "title": "Donation Claimed",
-      "message": "You claimed donation #14.",
-      "id": 26,
-      "created_at": "2025-09-20T20:24:16.378740"
-    },
-    {
-      "user_id": 5,
-      "type": "donation",
-      "title": "Donation Approved",
-      "message": "Your claim for donation #14 was approved.",
-      "action_url": "/donate-meds?highlight=14",
-      "id": 27,
-      "created_at": "2025-09-20T20:24:55.715910"
-    },
-    {
-      "user_id": 5,
-      "type": "approval",
-      "title": "Request Approved",
-      "message": "Your medicine request has been approved.",
-      "action_url": "/checkout/5",
-      "id": 28,
-      "created_at": "2025-09-20T20:24:57.228238"
     }
   ],
   "transactions": [],
@@ -833,13 +951,13 @@
     "counters": {
       "users": 8,
       "medicines": 30,
-      "wishlists": 12,
+      "wishlists": 16,
       "donations": 14,
       "grants": 1,
       "profiles": 8,
       "counters": 0,
       "demoData": 0,
-      "notifications": 28,
+      "notifications": 40,
       "transactions": 0
     }
   }
