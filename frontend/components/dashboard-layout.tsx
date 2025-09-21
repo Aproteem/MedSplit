@@ -16,7 +16,6 @@ import {
   FileText,
   Bell,
   LogOut,
-  Home,
   Moon,
   Sun,
 } from "lucide-react"
@@ -28,7 +27,6 @@ import { useCurrentUser } from "@/hooks/use-current-user"
 import { api } from "@/lib/api"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Buy Meds", href: "/buy-meds", icon: ShoppingCart },
   { name: "Donate Meds", href: "/donate-meds", icon: Gift },
   { name: "Micro Grants", href: "/micro-grants", icon: DollarSign },

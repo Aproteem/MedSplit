@@ -38,7 +38,7 @@ export default function LoginPage() {
       }
       const role = match.role === "doctor" ? "doctor" : "patient";
       setUser({ id: match.id, email: match.email, role });
-      router.push(role === "doctor" ? "/doctor" : "/dashboard");
+      router.push(role === "doctor" ? "/doctor" : "/buy-meds");
     } catch (_) {
       alert("Login failed. Try again.");
     } finally {

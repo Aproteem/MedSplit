@@ -49,7 +49,7 @@ export default function SignupPage() {
           body: JSON.stringify({ user_id: user.id, first_name, last_name }),
         });
       }
-      router.push(role === "doctor" ? "/doctor" : "/dashboard");
+      router.push(role === "doctor" ? "/doctor" : "/buy-meds");
     } catch (_) {
       alert("Signup failed. Please check your details and try again.");
     } finally {

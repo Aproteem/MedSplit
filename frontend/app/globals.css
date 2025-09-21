@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   /* Project palette
      Primary/Tertiary from image: #05668D, #028090, #00A896, #02C39A, #F0F3BD
@@ -291,6 +296,16 @@
 
 .gradient-text-hero {
   @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+}
+
+/* Lighter gradient for hero over video */
+.gradient-text-hero-light {
+  @apply bg-gradient-to-r from-white via-white/80 to-white bg-clip-text text-transparent;
+}
+
+/* Brand gradient (#02C39A -> #F0F3BD -> #ffffff) for hero heading */
+.gradient-text-hero-brand {
+  @apply bg-gradient-to-r from-[#02C39A] via-[#F0F3BD] to-white bg-clip-text text-transparent;
 }
 
 /* Page-scoped tile accent helper using CSS color-mix for subtle shading */

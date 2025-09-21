@@ -563,10 +563,10 @@ export default function ReceiptPage() {
 
         {/* Navigation */}
         <div className="flex justify-center space-x-4">
-          <Link href="/dashboard">
+          <Link href="/profile">
             <Button variant="outline">
               <Home className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              Back to Profile
             </Button>
           </Link>
           {receiptData.type === "medicine" ? (

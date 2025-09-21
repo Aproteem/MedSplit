@@ -59,6 +59,16 @@
       "pending_approval_meds": [],
       "id": 10,
       "created_at": "2025-09-21T00:14:03.025344"
+    },
+    {
+      "email": "a",
+      "password": "a",
+      "role": "patient",
+      "phone": "",
+      "num_meds_requested": 0,
+      "pending_approval_meds": [],
+      "id": 11,
+      "created_at": "2025-09-21T04:34:57.093100"
     }
   ],
   "medicines": [
@@ -811,6 +821,20 @@
       "id": 10,
       "created_at": "2025-09-21T00:14:03.369266",
       "avatar_url": "/profile-pics/10-1758439565512.png"
+    },
+    {
+      "first_name": "a",
+      "last_name": "",
+      "phone": "",
+      "address": "",
+      "emergency_contact": "",
+      "date_of_birth": "",
+      "bio": "",
+      "medical_conditions": [],
+      "allergies": [],
+      "user_id": 11,
+      "id": 11,
+      "created_at": "2025-09-21T04:34:57.407286"
     }
   ],
   "counters": [
@@ -1103,12 +1127,12 @@
   "demoData": [],
   "meta": {
     "counters": {
-      "users": 10,
+      "users": 11,
       "medicines": 30,
       "wishlists": 29,
       "donations": 20,
       "grants": 1,
-      "profiles": 10,
+      "profiles": 11,
       "counters": 3,
       "demoData": 0,
       "notifications": 77,
